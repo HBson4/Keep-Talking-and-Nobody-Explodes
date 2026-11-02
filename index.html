@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keep Talking & Nobody Explodes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="title" href="https://www.bombmanual.com/web/index.html" target="_blank">
+        <img src="images/title.png" alt="Title Image">
+    </a>
+
+<!-- 2x2 Grid Container for 4 Simultaneous Modules -->
+    <div class="modules-container">
+        
+        <!-- Slot 1 (Top-Left) -->
+        <div class="module-box">
+            <div class="module-selector-wrap">
+                <select id="select-1" class="module-select">
+                    <option value="">-- Select Module --</option>
+                    <option value="wires">Wires</option>
+                    <option value="cWires">Complicated Wires</option>
+                    <option value="wireSequence">Wire Sequence</option>
+                    <option value="password">Password</option>
+                </select>
+            </div>
+            <div id="content-1" class="module-content"></div>
+        </div>
+
+        <!-- Slot 2 (Top-Right) -->
+        <div class="module-box">
+            <div class="module-selector-wrap">
+                <select id="select-2" class="module-select">
+                    <option value="">-- Select Module --</option>
+                    <option value="wires">Wires</option>
+                    <option value="cWires">Complicated Wires</option>
+                    <option value="wireSequence">Wire Sequence</option>
+                    <option value="password">Password</option>
+                </select>
+            </div>
+            <div id="content-2" class="module-content"></div>
+        </div>
+
+        <!-- Slot 3 (Bottom-Left) -->
+        <div class="module-box">
+            <div class="module-selector-wrap">
+                <select id="select-3" class="module-select">
+                    <option value="">-- Select Module --</option>
+                    <option value="wires">Wires</option>
+                    <option value="cWires">Complicated Wires</option>
+                    <option value="wireSequence">Wire Sequence</option>
+                    <option value="password">Password</option>
+                </select>
+            </div>
+            <div id="content-3" class="module-content"></div>
+        </div>
+
+        <!-- Slot 4 (Bottom-Right) -->
+        <div class="module-box">
+            <div class="module-selector-wrap">
+                <select id="select-4" class="module-select">
+                    <option value="">-- Select Module --</option>
+                    <option value="wires">Wires</option>
+                    <option value="cWires">Complicated Wires</option>
+                    <option value="wireSequence">Wire Sequence</option>
+                    <option value="password">Password</option>
+                </select>
+            </div>
+            <div id="content-4" class="module-content"></div>
+        </div>
+
+    </div>
+
+    <!-- Wires Template -->
+    <template id="tpl-wires">
+        <div class="module">
+            <h2>Wires</h2>
+            <div class="wires-container">
+
+                <!-- Step 1: Select Wire Count -->
+                <div class="wire-count-group">
+                    <label>
+                        <input type="radio" name="wire_count" value="3"> 3 Wires
+                    </label>
+                    <label>
+                        <input type="radio" name="wire_count" value="4"> 4 Wires
+                    </label>
+                    <label>
+                        <input type="radio" name="wire_count" value="5"> 5 Wires
+                    </label>
+                    <label>
+                        <input type="radio" name="wire_count" value="6"> 6 Wires
+                    </label>
+                </div>
+
+                <!-- Step 2: Dynamic Color Selector Rows -->
+                <div class="dynamic-wires-container"></div>
+
+                <!-- Serial # Odd Toggle Button -->
+                <div class="cWiresInfo" style="justify-content: center; margin: 15px 0;">
+                    <div class="info-group">
+                        <button type="button" class="serial-toggle-btn serial-odd-btn">Serial # Odd</button>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div class="wire-result-display">
+                    Cut Wire: <span class="wire-cut-result">--</span>
+                </div>
+
+                <!-- Buttons Centered Below -->
+                <div class="button-group">
+                    <button class="btn generateBtn">Generate Results</button>
+                    <button class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Complicated Wires Template -->
+    <template id="tpl-cWires">
+        <div class="module">
+            <h2>Complicated Wires</h2>
+            <div class="c-wires-container">
+
+                <!-- 6 Vertical Wire Columns Grid -->
+                <div class="c-wires-grid">
+                    <!-- Wire 1 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">1</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-1-l" class="cWireCheckbox"><label for="cw-1-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-1-r" class="cWireCheckbox"><label for="cw-1-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-1-b" class="cWireCheckbox"><label for="cw-1-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-1-s" class="cWireCheckbox"><label for="cw-1-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+
+                    <!-- Wire 2 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">2</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-2-l" class="cWireCheckbox"><label for="cw-2-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-2-r" class="cWireCheckbox"><label for="cw-2-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-2-b" class="cWireCheckbox"><label for="cw-2-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-2-s" class="cWireCheckbox"><label for="cw-2-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+
+                    <!-- Wire 3 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">3</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-3-l" class="cWireCheckbox"><label for="cw-3-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-3-r" class="cWireCheckbox"><label for="cw-3-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-3-b" class="cWireCheckbox"><label for="cw-3-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-3-s" class="cWireCheckbox"><label for="cw-3-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+
+                    <!-- Wire 4 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">4</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-4-l" class="cWireCheckbox"><label for="cw-4-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-4-r" class="cWireCheckbox"><label for="cw-4-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-4-b" class="cWireCheckbox"><label for="cw-4-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-4-s" class="cWireCheckbox"><label for="cw-4-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+
+                    <!-- Wire 5 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">5</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-5-l" class="cWireCheckbox"><label for="cw-5-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-5-r" class="cWireCheckbox"><label for="cw-5-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-5-b" class="cWireCheckbox"><label for="cw-5-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-5-s" class="cWireCheckbox"><label for="cw-5-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+
+                    <!-- Wire 6 Column -->
+                    <div class="c-wire-col">
+                        <span class="c-wire-col-title">6</span>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-6-l" class="cWireCheckbox"><label for="cw-6-l" class="cw-badge badge-light">LED</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-6-r" class="cWireCheckbox"><label for="cw-6-r" class="cw-badge badge-red">Red</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-6-b" class="cWireCheckbox"><label for="cw-6-b" class="cw-badge badge-blue">Blue</label>
+                        </div>
+                        <div class="c-wire-prop">
+                            <input type="checkbox" id="cw-6-s" class="cWireCheckbox"><label for="cw-6-s" class="cw-badge badge-star">★</label>
+                        </div>
+                        <div class="c-wire-result-box wire-result">--</div>
+                    </div>
+                </div>
+
+                <div class="cWiresInfo" style="margin-top: 15px;">
+                    <div class="info-group">
+                        <button type="button" class="parallel-toggle-btn">Parallel Port?</button>
+                    </div>
+                    <div class="info-group">
+                        <button type="button" class="batteries-toggle-btn">2+ Batteries?</button>
+                    </div>
+                    <div class="info-group">
+                        <button type="button" class="serial-toggle-btn serial-even-btn">Serial # Even</button>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn generateBtn">Generate Results</button>
+                    <button class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Wire Sequence Template -->
+    <template id="tpl-wireSequence">
+        <div class="module">
+            <h2>Wire Sequence</h2>
+            <div class="wire-seq-container">
+                <!-- Stepper Navigation Bar -->
+                <div class="seq-nav-bar">
+                    <button type="button" class="btn-nav prev-panel-btn">← Back</button>
+                    <span class="panel-indicator">Panel <span id="active-panel-num">1</span> of 4</span>
+                    <button type="button" class="btn-nav next-panel-btn">Next →</button>
+                </div>
+
+                <div class="wire-panels-slider">
+                    <!-- Panel 1 -->
+                    <div class="wire-panel" data-panel="1">
+                        <div class="panel-wires">
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W1:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p1_w1_color" value="red" id="p1_w1_red"><label for="p1_w1_red">R</label>
+                                    <input type="radio" name="p1_w1_color" value="blue" id="p1_w1_blue"><label for="p1_w1_blue">B</label>
+                                    <input type="radio" name="p1_w1_color" value="black" id="p1_w1_black"><label for="p1_w1_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p1_w1_letter" value="a" id="p1_w1_a"><label for="p1_w1_a">A</label>
+                                    <input type="radio" name="p1_w1_letter" value="b" id="p1_w1_b"><label for="p1_w1_b">B</label>
+                                    <input type="radio" name="p1_w1_letter" value="c" id="p1_w1_c"><label for="p1_w1_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W2:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p1_w2_color" value="red" id="p1_w2_red"><label for="p1_w2_red">R</label>
+                                    <input type="radio" name="p1_w2_color" value="blue" id="p1_w2_blue"><label for="p1_w2_blue">B</label>
+                                    <input type="radio" name="p1_w2_color" value="black" id="p1_w2_black"><label for="p1_w2_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p1_w2_letter" value="a" id="p1_w2_a"><label for="p1_w2_a">A</label>
+                                    <input type="radio" name="p1_w2_letter" value="b" id="p1_w2_b"><label for="p1_w2_b">B</label>
+                                    <input type="radio" name="p1_w2_letter" value="c" id="p1_w2_c"><label for="p1_w2_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W3:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p1_w3_color" value="red" id="p1_w3_red"><label for="p1_w3_red">R</label>
+                                    <input type="radio" name="p1_w3_color" value="blue" id="p1_w3_blue"><label for="p1_w3_blue">B</label>
+                                    <input type="radio" name="p1_w3_color" value="black" id="p1_w3_black"><label for="p1_w3_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p1_w3_letter" value="a" id="p1_w3_a"><label for="p1_w3_a">A</label>
+                                    <input type="radio" name="p1_w3_letter" value="b" id="p1_w3_b"><label for="p1_w3_b">B</label>
+                                    <input type="radio" name="p1_w3_letter" value="c" id="p1_w3_c"><label for="p1_w3_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2 -->
+                    <div class="wire-panel" data-panel="2">
+                        <div class="panel-wires">
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W1:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p2_w1_color" value="red" id="p2_w1_red"><label for="p2_w1_red">R</label>
+                                    <input type="radio" name="p2_w1_color" value="blue" id="p2_w1_blue"><label for="p2_w1_blue">B</label>
+                                    <input type="radio" name="p2_w1_color" value="black" id="p2_w1_black"><label for="p2_w1_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p2_w1_letter" value="a" id="p2_w1_a"><label for="p2_w1_a">A</label>
+                                    <input type="radio" name="p2_w1_letter" value="b" id="p2_w1_b"><label for="p2_w1_b">B</label>
+                                    <input type="radio" name="p2_w1_letter" value="c" id="p2_w1_c"><label for="p2_w1_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W2:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p2_w2_color" value="red" id="p2_w2_red"><label for="p2_w2_red">R</label>
+                                    <input type="radio" name="p2_w2_color" value="blue" id="p2_w2_blue"><label for="p2_w2_blue">B</label>
+                                    <input type="radio" name="p2_w2_color" value="black" id="p2_w2_black"><label for="p2_w2_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p2_w2_letter" value="a" id="p2_w2_a"><label for="p2_w2_a">A</label>
+                                    <input type="radio" name="p2_w2_letter" value="b" id="p2_w2_b"><label for="p2_w2_b">B</label>
+                                    <input type="radio" name="p2_w2_letter" value="c" id="p2_w2_c"><label for="p2_w2_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W3:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p2_w3_color" value="red" id="p2_w3_red"><label for="p2_w3_red">R</label>
+                                    <input type="radio" name="p2_w3_color" value="blue" id="p2_w3_blue"><label for="p2_w3_blue">B</label>
+                                    <input type="radio" name="p2_w3_color" value="black" id="p2_w3_black"><label for="p2_w3_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p2_w3_letter" value="a" id="p2_w3_a"><label for="p2_w3_a">A</label>
+                                    <input type="radio" name="p2_w3_letter" value="b" id="p2_w3_b"><label for="p2_w3_b">B</label>
+                                    <input type="radio" name="p2_w3_letter" value="c" id="p2_w3_c"><label for="p2_w3_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3 -->
+                    <div class="wire-panel" data-panel="3">
+                        <div class="panel-wires">
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W1:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p3_w1_color" value="red" id="p3_w1_red"><label for="p3_w1_red">R</label>
+                                    <input type="radio" name="p3_w1_color" value="blue" id="p3_w1_blue"><label for="p3_w1_blue">B</label>
+                                    <input type="radio" name="p3_w1_color" value="black" id="p3_w1_black"><label for="p3_w1_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p3_w1_letter" value="a" id="p3_w1_a"><label for="p3_w1_a">A</label>
+                                    <input type="radio" name="p3_w1_letter" value="b" id="p3_w1_b"><label for="p3_w1_b">B</label>
+                                    <input type="radio" name="p3_w1_letter" value="c" id="p3_w1_c"><label for="p3_w1_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W2:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p3_w2_color" value="red" id="p3_w2_red"><label for="p3_w2_red">R</label>
+                                    <input type="radio" name="p3_w2_color" value="blue" id="p3_w2_blue"><label for="p3_w2_blue">B</label>
+                                    <input type="radio" name="p3_w2_color" value="black" id="p3_w2_black"><label for="p3_w2_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p3_w2_letter" value="a" id="p3_w2_a"><label for="p3_w2_a">A</label>
+                                    <input type="radio" name="p3_w2_letter" value="b" id="p3_w2_b"><label for="p3_w2_b">B</label>
+                                    <input type="radio" name="p3_w2_letter" value="c" id="p3_w2_c"><label for="p3_w2_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W3:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p3_w3_color" value="red" id="p3_w3_red"><label for="p3_w3_red">R</label>
+                                    <input type="radio" name="p3_w3_color" value="blue" id="p3_w3_blue"><label for="p3_w3_blue">B</label>
+                                    <input type="radio" name="p3_w3_color" value="black" id="p3_w3_black"><label for="p3_w3_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p3_w3_letter" value="a" id="p3_w3_a"><label for="p3_w3_a">A</label>
+                                    <input type="radio" name="p3_w3_letter" value="b" id="p3_w3_b"><label for="p3_w3_b">B</label>
+                                    <input type="radio" name="p3_w3_letter" value="c" id="p3_w3_c"><label for="p3_w3_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 4 -->
+                    <div class="wire-panel" data-panel="4">
+                        <div class="panel-wires">
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W1:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p4_w1_color" value="red" id="p4_w1_red"><label for="p4_w1_red">R</label>
+                                    <input type="radio" name="p4_w1_color" value="blue" id="p4_w1_blue"><label for="p4_w1_blue">B</label>
+                                    <input type="radio" name="p4_w1_color" value="black" id="p4_w1_black"><label for="p4_w1_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p4_w1_letter" value="a" id="p4_w1_a"><label for="p4_w1_a">A</label>
+                                    <input type="radio" name="p4_w1_letter" value="b" id="p4_w1_b"><label for="p4_w1_b">B</label>
+                                    <input type="radio" name="p4_w1_letter" value="c" id="p4_w1_c"><label for="p4_w1_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W2:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p4_w2_color" value="red" id="p4_w2_red"><label for="p4_w2_red">R</label>
+                                    <input type="radio" name="p4_w2_color" value="blue" id="p4_w2_blue"><label for="p4_w2_blue">B</label>
+                                    <input type="radio" name="p4_w2_color" value="black" id="p4_w2_black"><label for="p4_w2_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p4_w2_letter" value="a" id="p4_w2_a"><label for="p4_w2_a">A</label>
+                                    <input type="radio" name="p4_w2_letter" value="b" id="p4_w2_b"><label for="p4_w2_b">B</label>
+                                    <input type="radio" name="p4_w2_letter" value="c" id="p4_w2_c"><label for="p4_w2_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                            <div class="seq-wire-row">
+                                <span class="seq-label">W3:</span>
+                                <div class="seq-group color-select-group">
+                                    <input type="radio" name="p4_w3_color" value="red" id="p4_w3_red"><label for="p4_w3_red">R</label>
+                                    <input type="radio" name="p4_w3_color" value="blue" id="p4_w3_blue"><label for="p4_w3_blue">B</label>
+                                    <input type="radio" name="p4_w3_color" value="black" id="p4_w3_black"><label for="p4_w3_black">K</label>
+                                </div>
+                                <div class="seq-group letter-select-group">
+                                    <input type="radio" name="p4_w3_letter" value="a" id="p4_w3_a"><label for="p4_w3_a">A</label>
+                                    <input type="radio" name="p4_w3_letter" value="b" id="p4_w3_b"><label for="p4_w3_b">B</label>
+                                    <input type="radio" name="p4_w3_letter" value="c" id="p4_w3_c"><label for="p4_w3_c">C</label>
+                                </div>
+                                <span class="seq-result">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn generateBtn">Generate Results</button>
+                    <button type="button" class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Password Template -->
+    <template id="tpl-password">
+        <div class="module">
+            <h2>Password</h2>
+            <div class="password-container">
+                <p class="password-instructions">Enter the 6 possible letters for each position:</p>
+
+                <!-- 5 Letter Boxes Side-by-Side -->
+                <div class="password-inputs">
+                    <div class="input-col">
+                        <label>Pos 1</label>
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                    </div>
+                    <div class="input-col">
+                        <label>Pos 2</label>
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                    </div>
+                    <div class="input-col">
+                        <label>Pos 3</label>
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                    </div>
+                    <div class="input-col">
+                        <label>Pos 4</label>
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                    </div>
+                    <div class="input-col">
+                        <label>Pos 5</label>
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div class="password-result-display">
+                    Result: <span class="pwd-result">--</span>
+                </div>
+
+                <!-- Buttons Centered Below -->
+                <div class="button-group">
+                    <button class="btn generateBtn">Generate Results</button>
+                    <button class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>
