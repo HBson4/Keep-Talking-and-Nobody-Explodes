@@ -185,36 +185,40 @@ function resetPassword(container) {
 
 
 // ==========================================
-// WIRES MODULE LOGIC
+// SIMPLE WIRES MODULE LOGIC
 // ==========================================
 const AVAILABLE_COLORS = ['black', 'blue', 'white', 'red', 'yellow'];
 
 function initSimpleWires(container) {
-    const countRadios = container.querySelectorAll('input[name="wire_count"]');
+    const countButtons = container.querySelectorAll('.wire-count-btn');
     const dynamicContainer = container.querySelector('.dynamic-wires-container');
     const generateBtn = container.querySelector('.generateBtn');
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.wire-cut-result');
+    const serialOddBtn = container.querySelector('.serial-odd-btn');
 
     // Single Serial Odd toggle button logic
-    const serialOddBtn = container.querySelector('.serial-odd-btn');
     if (serialOddBtn) {
         serialOddBtn.addEventListener('click', () => {
             serialOddBtn.classList.toggle('active');
         });
     }
 
-    countRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const count = parseInt(e.target.value);
+    // Wire count button toggle and row rendering
+    countButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            countButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const count = parseInt(btn.getAttribute('data-count'));
             renderWireRows(count, dynamicContainer);
             resultDisplay.textContent = '--';
         });
     });
 
     generateBtn.addEventListener('click', () => solveSimpleWires(container));
+    
     resetBtn.addEventListener('click', () => {
-        countRadios.forEach(r => r.checked = false);
+        countButtons.forEach(b => b.classList.remove('active'));
         dynamicContainer.innerHTML = '';
         resultDisplay.textContent = '--';
         if (serialOddBtn) serialOddBtn.classList.remove('active');
