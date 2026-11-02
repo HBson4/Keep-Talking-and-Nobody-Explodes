@@ -8,7 +8,7 @@
 </head>
 <body>
     <a class="title" href="https://www.bombmanual.com/web/index.html" target="_blank">
-        <img src="title.png" alt="Title Image">
+        <img src="images/title.png" alt="Title Image">
     </a>
 
 <!-- 2x2 Grid Container for 4 Simultaneous Modules -->
@@ -72,44 +72,31 @@
 
     </div>
 
-    <!-- Wires Template -->
+    <!-- Simple Wires Template -->
     <template id="tpl-wires">
         <div class="module">
             <h2>Wires</h2>
             <div class="wires-container">
-
-                <!-- Step 1: Select Wire Count -->
-                <div class="wire-count-group">
-                    <label>
-                        <input type="radio" name="wire_count" value="3"> 3 Wires
-                    </label>
-                    <label>
-                        <input type="radio" name="wire_count" value="4"> 4 Wires
-                    </label>
-                    <label>
-                        <input type="radio" name="wire_count" value="5"> 5 Wires
-                    </label>
-                    <label>
-                        <input type="radio" name="wire_count" value="6"> 6 Wires
-                    </label>
+                <div class="color-button-group wire-count-group" style="margin-bottom: 12px; justify-content: center; display: flex; gap: 4px;">
+                    <button type="button" class="wire-count-btn" data-count="3">3 Wires</button>
+                    <button type="button" class="wire-count-btn" data-count="4">4 Wires</button>
+                    <button type="button" class="wire-count-btn" data-count="5">5 Wires</button>
+                    <button type="button" class="wire-count-btn" data-count="6">6 Wires</button>
                 </div>
 
-                <!-- Step 2: Dynamic Color Selector Rows -->
                 <div class="dynamic-wires-container"></div>
 
-                <!-- Serial # Odd Toggle Button -->
                 <div class="cWiresInfo" style="justify-content: center; margin: 15px 0;">
                     <div class="info-group">
                         <button type="button" class="serial-toggle-btn serial-odd-btn">Serial # Odd</button>
                     </div>
                 </div>
 
-                <!-- Result Display -->
-                <div class="wire-result-display">
-                    Cut Wire: <span class="wire-cut-result">--</span>
+                <div class="result-box" style="text-align: center; margin: 10px 0;">
+                    <span style="font-weight: bold; color: #fff;">Cut: </span>
+                    <span class="wire-cut-result" style="font-weight: bold; font-size: 16px; color: #07ef22;">--</span>
                 </div>
 
-                <!-- Buttons Centered Below -->
                 <div class="button-group">
                     <button class="btn generateBtn">Generate Results</button>
                     <button class="btn btn-secondary resetBtn">Reset</button>
@@ -128,7 +115,7 @@
                 <div class="c-wires-grid">
                     <!-- Wire 1 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">1</span>
+                        <span class="c-wire-col-title">Wire 1</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-1-l" class="cWireCheckbox"><label for="cw-1-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -146,7 +133,7 @@
 
                     <!-- Wire 2 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">2</span>
+                        <span class="c-wire-col-title">Wire 2</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-2-l" class="cWireCheckbox"><label for="cw-2-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -164,7 +151,7 @@
 
                     <!-- Wire 3 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">3</span>
+                        <span class="c-wire-col-title">Wire 3</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-3-l" class="cWireCheckbox"><label for="cw-3-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -182,7 +169,7 @@
 
                     <!-- Wire 4 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">4</span>
+                        <span class="c-wire-col-title">Wire 4</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-4-l" class="cWireCheckbox"><label for="cw-4-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -200,7 +187,7 @@
 
                     <!-- Wire 5 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">5</span>
+                        <span class="c-wire-col-title">Wire 5</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-5-l" class="cWireCheckbox"><label for="cw-5-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -218,7 +205,7 @@
 
                     <!-- Wire 6 Column -->
                     <div class="c-wire-col">
-                        <span class="c-wire-col-title">6</span>
+                        <span class="c-wire-col-title">Wire 6</span>
                         <div class="c-wire-prop">
                             <input type="checkbox" id="cw-6-l" class="cWireCheckbox"><label for="cw-6-l" class="cw-badge badge-light">LED</label>
                         </div>
@@ -263,7 +250,7 @@
                 <!-- Stepper Navigation Bar -->
                 <div class="seq-nav-bar">
                     <button type="button" class="btn-nav prev-panel-btn">← Back</button>
-                    <span class="panel-indicator">Panel <span id="active-panel-num">1</span> of 4</span>
+                    <span class="panel-indicator"><span id="active-panel-num">1</span> of 4</span>
                     <button type="button" class="btn-nav next-panel-btn">Next →</button>
                 </div>
 
@@ -272,7 +259,7 @@
                     <div class="wire-panel" data-panel="1">
                         <div class="panel-wires">
                             <div class="seq-wire-row">
-                                <span class="seq-label">W1:</span>
+                                <span class="seq-label">Wire 1:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p1_w1_color" value="red" id="p1_w1_red"><label for="p1_w1_red">R</label>
                                     <input type="radio" name="p1_w1_color" value="blue" id="p1_w1_blue"><label for="p1_w1_blue">B</label>
@@ -286,7 +273,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W2:</span>
+                                <span class="seq-label">Wire 2:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p1_w2_color" value="red" id="p1_w2_red"><label for="p1_w2_red">R</label>
                                     <input type="radio" name="p1_w2_color" value="blue" id="p1_w2_blue"><label for="p1_w2_blue">B</label>
@@ -300,7 +287,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W3:</span>
+                                <span class="seq-label">Wire 3:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p1_w3_color" value="red" id="p1_w3_red"><label for="p1_w3_red">R</label>
                                     <input type="radio" name="p1_w3_color" value="blue" id="p1_w3_blue"><label for="p1_w3_blue">B</label>
@@ -320,7 +307,7 @@
                     <div class="wire-panel" data-panel="2">
                         <div class="panel-wires">
                             <div class="seq-wire-row">
-                                <span class="seq-label">W1:</span>
+                                <span class="seq-label">Wire 1:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p2_w1_color" value="red" id="p2_w1_red"><label for="p2_w1_red">R</label>
                                     <input type="radio" name="p2_w1_color" value="blue" id="p2_w1_blue"><label for="p2_w1_blue">B</label>
@@ -334,7 +321,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W2:</span>
+                                <span class="seq-label">Wire 2:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p2_w2_color" value="red" id="p2_w2_red"><label for="p2_w2_red">R</label>
                                     <input type="radio" name="p2_w2_color" value="blue" id="p2_w2_blue"><label for="p2_w2_blue">B</label>
@@ -348,7 +335,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W3:</span>
+                                <span class="seq-label">Wire 3:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p2_w3_color" value="red" id="p2_w3_red"><label for="p2_w3_red">R</label>
                                     <input type="radio" name="p2_w3_color" value="blue" id="p2_w3_blue"><label for="p2_w3_blue">B</label>
@@ -368,7 +355,7 @@
                     <div class="wire-panel" data-panel="3">
                         <div class="panel-wires">
                             <div class="seq-wire-row">
-                                <span class="seq-label">W1:</span>
+                                <span class="seq-label">Wire 1:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p3_w1_color" value="red" id="p3_w1_red"><label for="p3_w1_red">R</label>
                                     <input type="radio" name="p3_w1_color" value="blue" id="p3_w1_blue"><label for="p3_w1_blue">B</label>
@@ -382,7 +369,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W2:</span>
+                                <span class="seq-label">Wire 2:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p3_w2_color" value="red" id="p3_w2_red"><label for="p3_w2_red">R</label>
                                     <input type="radio" name="p3_w2_color" value="blue" id="p3_w2_blue"><label for="p3_w2_blue">B</label>
@@ -396,7 +383,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W3:</span>
+                                <span class="seq-label">Wire 3:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p3_w3_color" value="red" id="p3_w3_red"><label for="p3_w3_red">R</label>
                                     <input type="radio" name="p3_w3_color" value="blue" id="p3_w3_blue"><label for="p3_w3_blue">B</label>
@@ -416,7 +403,7 @@
                     <div class="wire-panel" data-panel="4">
                         <div class="panel-wires">
                             <div class="seq-wire-row">
-                                <span class="seq-label">W1:</span>
+                                <span class="seq-label">Wire 1:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p4_w1_color" value="red" id="p4_w1_red"><label for="p4_w1_red">R</label>
                                     <input type="radio" name="p4_w1_color" value="blue" id="p4_w1_blue"><label for="p4_w1_blue">B</label>
@@ -430,7 +417,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W2:</span>
+                                <span class="seq-label">Wire 2:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p4_w2_color" value="red" id="p4_w2_red"><label for="p4_w2_red">R</label>
                                     <input type="radio" name="p4_w2_color" value="blue" id="p4_w2_blue"><label for="p4_w2_blue">B</label>
@@ -444,7 +431,7 @@
                                 <span class="seq-result">--</span>
                             </div>
                             <div class="seq-wire-row">
-                                <span class="seq-label">W3:</span>
+                                <span class="seq-label">Wire 3:</span>
                                 <div class="seq-group color-select-group">
                                     <input type="radio" name="p4_w3_color" value="red" id="p4_w3_red"><label for="p4_w3_red">R</label>
                                     <input type="radio" name="p4_w3_color" value="blue" id="p4_w3_blue"><label for="p4_w3_blue">B</label>
@@ -475,7 +462,6 @@
         <div class="module">
             <h2>Password</h2>
             <div class="password-container">
-                <p class="password-instructions">Enter the 6 possible letters for each position:</p>
 
                 <!-- 5 Letter Boxes Side-by-Side -->
                 <div class="password-inputs">
