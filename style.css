@@ -455,10 +455,37 @@ input[type="checkbox"] {
     border-color: #d94b28;
 }
 
-.wire-count-group input[type="radio"]:checked + label {
+.wire-count-group label input[type="radio"]:checked {
     background-color: #bc4325;
     color: #ffffff;
     border-color: #07ef22;
+}
+
+/* --------------- Wire Count Button Styles --------------- */
+.wire-count-btn {
+    padding: 6px 14px;
+    border-radius: 3px;
+    border: 1px solid #444;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    user-select: none;
+    background-color: #222;
+    color: #fff;
+    font-family: inherit;
+    transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+.wire-count-btn:hover {
+    transform: scale(1.05);
+    background-color: #333;
+}
+
+/* Active highlighted state when clicked */
+.wire-count-btn.active {
+    background-color: #bc4325;
+    color: #ffffff;
+    border-color: #fff;
 }
 
 .dynamic-wires-container {
@@ -616,7 +643,7 @@ input[type="checkbox"] {
 .panel-indicator {
     color: #ffffff;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .wire-panels-slider {
@@ -652,7 +679,7 @@ input[type="checkbox"] {
 
 .seq-label {
     font-weight: bold;
-    font-size: 12px;
+    font-size: 16px;
     color: #fff;
     min-width: 25px;
 }
@@ -671,7 +698,7 @@ input[type="checkbox"] {
     border-radius: 3px;
     border: 1px solid #444;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 16px;
     font-weight: bold;
     user-select: none;
     background-color: #222;
@@ -704,7 +731,7 @@ input[type="checkbox"] {
 
 .seq-result {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 16px;
     min-width: 35px;
     text-align: right;
     color: #ffffff;
