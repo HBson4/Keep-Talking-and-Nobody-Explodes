@@ -736,3 +736,206 @@ input[type="checkbox"] {
     text-align: right;
     color: #ffffff;
 }
+
+/* --------------- Memory Module Styles --------------- */
+.memory-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.memory-stages {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.memory-stage-row {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease;
+}
+
+.memory-stage-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+}
+
+.memory-display-group, .memory-options-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.mem-disp-btn, .mem-val-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 3px;
+    border: 1px solid #444;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #222;
+    color: #fff;
+    font-family: inherit;
+    transition: all 0.1s ease;
+}
+
+.mem-disp-btn:hover, .mem-val-btn:hover {
+    background-color: #333;
+}
+
+.mem-disp-btn.active, .mem-val-btn.active {
+    background-color: #bc4325;
+    color: #ffffff;
+    border-color: #fff;
+}
+
+.memory-action-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    border-radius: 3px;
+    border: 1px dashed #555;
+}
+
+.mem-instruction-text {
+    font-size: 16px;
+    color: #07ef22;
+    margin: 0;
+    font-weight: bold;
+}
+
+.memory-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.mem-pos-btn, .mem-lbl-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 3px;
+    border: 1px solid #444;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #222;
+    color: #fff;
+    font-family: inherit;
+    transition: all 0.1s ease;
+}
+
+.mem-pos-btn:hover, .mem-lbl-btn:hover {
+    background-color: #333;
+}
+
+.mem-pos-btn.active, .mem-lbl-btn.active {
+    background-color: #bc4325;
+    color: #ffffff;
+    border-color: #fff;
+}
+
+/* --------------- Disabled Button Styling --------------- */
+.mem-pos-btn:disabled, .mem-lbl-btn:disabled {
+    background-color: #1a1a1a !important;
+    color: #555 !important;
+    border-color: #333 !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* --------------- Morse Code Text Input Styles --------------- */
+.morse-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.morse-input-container {
+    width: 100%;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+#morse-text-input {
+    width: 100%;
+    padding: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #07ef22;
+    font-size: 16px;
+    font-family: monospace;
+    font-weight: bold;
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+#morse-text-input:focus {
+    outline: none;
+    border-color: #07ef22;
+}
+
+.morse-results-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed #555;
+    padding: 8px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.morse-word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* No max-height or overflow so everything displays at once */
+}
+
+.morse-item {
+    display: flex;
+    justify-content: space-between;
+    background: #1e1e1e;
+    padding: 5px 8px;
+    border-radius: 3px;
+    border: 1px solid #333;
+    font-size: 12px;
+}
+
+.morse-item .word {
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.morse-item .freq {
+    color: #07ef22;
+}
+
+.morse-placeholder-tip {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+    text-align: center;
+    padding: 10px 0;
+}
