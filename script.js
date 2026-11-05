@@ -29,6 +29,10 @@ function loadModule(containerId, moduleType) {
             initSimpleWires(container);
         } else if (moduleType === 'wireSequence') {
             initWireSequence(container);
+        } else if (moduleType === 'memory') {
+            initMemory(container);
+        } else if (moduleType === 'morse') {
+            initMorse(container);
         }
     }
 }
@@ -185,7 +189,7 @@ function resetPassword(container) {
 
 
 // ==========================================
-// SIMPLE WIRES MODULE LOGIC
+// WIRES MODULE LOGIC
 // ==========================================
 const AVAILABLE_COLORS = ['black', 'blue', 'white', 'red', 'yellow'];
 
@@ -196,6 +200,14 @@ function initSimpleWires(container) {
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.wire-cut-result');
     const serialOddBtn = container.querySelector('.serial-odd-btn');
+
+    renderWireRows(3, dynamicContainer); // Default to 3 wires on load
+    
+    // Set the first count button as active by default
+    const defaultBtn = container.querySelector('.wire-count-btn[data-count="3"]');
+    if (defaultBtn) defaultBtn.classList.add('active');
+
+    resultDisplay.style.color = '#fff';
 
     // Single Serial Odd toggle button logic
     if (serialOddBtn) {
@@ -222,6 +234,9 @@ function initSimpleWires(container) {
         dynamicContainer.innerHTML = '';
         resultDisplay.textContent = '--';
         if (serialOddBtn) serialOddBtn.classList.remove('active');
+        resultDisplay.style.color = '#fff';
+        renderWireRows(3, dynamicContainer);
+        defaultBtn.classList.add('active');
     });
 }
 
@@ -470,5 +485,327 @@ function resetWireSequence(container) {
     container.querySelectorAll('.seq-result').forEach(span => {
         span.textContent = '--';
         span.style.color = 'inherit';
+    });
+}
+
+// ==========================================
+// MEMORY MODULE LOGIC
+// ==========================================
+function initMemory(container) {
+    const stageRows = container.querySelectorAll('.memory-stage-row');
+    const resetBtn = container.querySelector('.resetBtn');
+
+    const memoryState = {
+        1: { display: null, pos: null, label: null },
+        2: { display: null, pos: null, label: null },
+        3: { display: null, pos: null, label: null },
+        4: { display: null, pos: null, label: null },
+        5: { display: null, pos: null, label: null }
+    };
+
+    function processStage(stageNum) {
+        const disp = memoryState[stageNum].display;
+        let text = "";
+        let autoPos = null;
+        let autoLbl = null;
+
+        if (stageNum === 1) {
+            if (disp === 1 || disp === 2) { text = "position 2"; autoPos = 2; }
+            else if (disp === 3) { text = "position 3"; autoPos = 3; }
+            else if (disp === 4) { text = "position 4"; autoPos = 4; }
+        } else if (stageNum === 2) {
+            if (disp === 1) { 
+                text = "button labeled '4'"; 
+                autoLbl = 4; 
+            }
+            else if (disp === 2 || disp === 4) { 
+                const targetPos = memoryState[1].pos;
+                text = `position ${targetPos}`; 
+                autoPos = targetPos; 
+            }
+            else if (disp === 3) { text = "position 1"; autoPos = 1; }
+        } else if (stageNum === 3) {
+            if (disp === 1) { 
+                const targetLbl = memoryState[2].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+            else if (disp === 2) { 
+                const targetLbl = memoryState[1].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+            else if (disp === 3) { text = "position 3"; autoPos = 3; }
+            else if (disp === 4) { text = "button labeled '4'"; autoLbl = 4; }
+        } else if (stageNum === 4) {
+            if (disp === 1) { 
+                const targetPos = memoryState[1].pos;
+                text = `position ${targetPos}`; 
+                autoPos = targetPos; 
+            }
+            else if (disp === 2) { text = "position 1"; autoPos = 1; }
+            else if (disp === 3 || disp === 4) { 
+                const targetPos = memoryState[2].pos;
+                text = `position ${targetPos}`; 
+                autoPos = targetPos; 
+            }
+        } else if (stageNum === 5) {
+            if (disp === 1) { 
+                const targetLbl = memoryState[1].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+            else if (disp === 2) { 
+                const targetLbl = memoryState[2].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+            else if (disp === 3) { 
+                const targetLbl = memoryState[4].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+            else if (disp === 4) { 
+                const targetLbl = memoryState[3].label;
+                text = `button labeled '${targetLbl}'`; 
+                autoLbl = targetLbl; 
+            }
+        }
+
+        return { text, autoPos, autoLbl };
+    }
+
+    stageRows.forEach((row, index) => {
+        const stageNum = index + 1;
+        const dispBtns = row.querySelectorAll('.mem-disp-btn');
+        const actionBox = row.querySelector('.memory-action-box');
+        const instructionText = row.querySelector('.mem-instruction-text');
+        
+        const posBtns = row.querySelectorAll('.mem-pos-btn');
+        const lblBtns = row.querySelectorAll('.mem-lbl-btn');
+
+        dispBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                dispBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                memoryState[stageNum].display = parseInt(btn.getAttribute('data-val'));
+                
+                // Reset inputs and enable all buttons initially
+                posBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.disabled = false;
+                });
+                lblBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.disabled = false;
+                });
+                memoryState[stageNum].pos = null;
+                memoryState[stageNum].label = null;
+
+                const result = processStage(stageNum);
+                instructionText.textContent = result.text;
+                actionBox.style.display = 'flex';
+
+                // If position is automatically selected, grey out other position buttons
+                if (result.autoPos !== null) {
+                    memoryState[stageNum].pos = result.autoPos;
+                    posBtns.forEach(b => {
+                        const val = parseInt(b.getAttribute('data-val'));
+                        if (val === result.autoPos) {
+                            b.classList.add('active');
+                        } else {
+                            b.disabled = true; // Grey out unselected buttons in this section
+                        }
+                    });
+                }
+
+                // If label is automatically selected, grey out other label buttons
+                if (result.autoLbl !== null) {
+                    memoryState[stageNum].label = result.autoLbl;
+                    lblBtns.forEach(b => {
+                        const val = parseInt(b.getAttribute('data-val'));
+                        if (val === result.autoLbl) {
+                            b.classList.add('active');
+                        } else {
+                            b.disabled = true; // Grey out unselected buttons in this section
+                        }
+                    });
+                }
+            });
+        });
+
+        posBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                posBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                memoryState[stageNum].pos = parseInt(btn.getAttribute('data-val'));
+                checkStageComplete(stageNum, container);
+            });
+        });
+
+        lblBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                lblBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                memoryState[stageNum].label = parseInt(btn.getAttribute('data-val'));
+                checkStageComplete(stageNum, container);
+            });
+        });
+    });
+
+    function checkStageComplete(stageNum, container) {
+        if (stageNum < 5) {
+            const nextRow = container.querySelector(`#m-stage-${stageNum + 1}`);
+            if (nextRow) {
+                nextRow.style.opacity = '1';
+                nextRow.style.pointerEvents = 'auto';
+            }
+        }
+    }
+
+    resetBtn.addEventListener('click', () => {
+        stageRows.forEach((row, index) => {
+            const stNum = index + 1;
+            memoryState[stNum] = { display: null, pos: null, label: null };
+            row.querySelectorAll('button').forEach(b => {
+                b.classList.remove('active');
+                b.disabled = false;
+            });
+            row.querySelector('.memory-action-box').style.display = 'none';
+            if (stNum > 1) {
+                row.style.opacity = '0.4';
+                row.style.pointerEvents = 'none';
+            }
+        });
+    });
+}
+
+// ==========================================
+// MORSE CODE MODULE LOGIC (Fuzzy & Substring Matching)
+// ==========================================
+function initMorse(container) {
+    const textInput = container.querySelector('#morse-text-input');
+    const wordListContainer = container.querySelector('.morse-word-list');
+    const resetBtn = container.querySelector('.resetBtn');
+
+    // Standard Morse Code Map (Letter to Morse)
+    const letterToMorse = {
+        'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.',
+        'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---',
+        'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---',
+        'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-',
+        'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--',
+        'z': '--..'
+    };
+
+    // Raw dictionary data
+    const rawDictionary = [
+        { word: "shell", freq: "3.505 MHz" },
+        { word: "halls", freq: "3.515 MHz" },
+        { word: "slick", freq: "3.522 MHz" },
+        { word: "trick", freq: "3.532 MHz" },
+        { word: "boxes", freq: "3.535 MHz" },
+        { word: "leaks", freq: "3.542 MHz" },
+        { word: "strobe", freq: "3.545 MHz" },
+        { word: "bistro", freq: "3.552 MHz" },
+        { word: "flick", freq: "3.555 MHz" },
+        { word: "bomb", freq: "3.565 MHz" },
+        { word: "break", freq: "3.572 MHz" },
+        { word: "brick", freq: "3.575 MHz" },
+        { word: "steak", freq: "3.582 MHz" },
+        { word: "sting", freq: "3.592 MHz" },
+        { word: "vector", freq: "3.595 MHz" },
+        { word: "beats", freq: "3.600 MHz" }
+    ];
+
+    // Pre-calculate continuous Morse code for each word
+    const morseDictionary = rawDictionary.map(item => {
+        const continuousMorse = item.word.split('').map(char => letterToMorse[char] || '').join('');
+        return { ...item, continuousMorse };
+    });
+
+    // Levenshtein Distance helper for fuzzy matching typos
+    function getEditDistance(a, b) {
+        const matrix = [];
+        for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+        for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i-1) === a.charAt(j-1)) {
+                    matrix[i][j] = matrix[i-1][j-1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i-1][j-1] + 1, // substitution
+                        matrix[i][j-1] + 1,   // insertion
+                        matrix[i-1][j] + 1    // deletion
+                    );
+                }
+            }
+        }
+        return matrix[b.length][a.length];
+    }
+
+    // Find best match score against any substring of the word's morse code
+    function getBestSubstringScore(pattern, text) {
+        if (!pattern) return Infinity;
+        if (text.includes(pattern)) return 0; // Perfect substring match
+
+        let minDistance = Infinity;
+        // Check substrings whose lengths are close to the pattern length
+        for (let i = 0; i < text.length; i++) {
+            for (let j = i + 1; j <= text.length; j++) {
+                const sub = text.substring(i, j);
+                if (Math.abs(sub.length - pattern.length) <= 3) {
+                    const dist = getEditDistance(pattern, sub);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                    }
+                }
+            }
+        }
+        return minDistance;
+    }
+
+    function updateMatches() {
+        const inputVal = textInput.value.replace(/[^.-]/g, '');
+        
+        if (!inputVal) {
+            wordListContainer.innerHTML = `<span class="morse-placeholder-tip">Type sequence above...</span>`;
+            return;
+        }
+
+        // Score all words based on how closely they match (lower score = better match)
+        const scoredMatches = morseDictionary.map(item => {
+            const score = getBestSubstringScore(inputVal, item.continuousMorse);
+            return { ...item, score };
+        });
+
+        // Filter out poor matches (allowing up to 2 mistakes/errors)
+        const validMatches = scoredMatches.filter(item => item.score <= 2);
+
+        // Sort by closest match (lowest score first)
+        validMatches.sort((a, b) => a.score - b.score);
+
+        if (validMatches.length === 0) {
+            wordListContainer.innerHTML = `<span class="morse-placeholder-tip" style="color: #ff5555;">No matching words found</span>`;
+        } else {
+            wordListContainer.innerHTML = validMatches.map(m => `
+                <div class="morse-item" style="${m.score > 0 ? 'opacity: 0.7;' : ''}">
+                    <span class="word">${m.word} ${m.score > 0 ? '<small style="font-size:9px; color:#ffaa00;">(approx)</small>' : ''}</span>
+                    <span class="freq">${m.freq}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    textInput.addEventListener('input', updateMatches);
+
+    resetBtn.addEventListener('click', () => {
+        textInput.value = "";
+        updateMatches();
     });
 }
