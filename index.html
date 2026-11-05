@@ -8,7 +8,7 @@
 </head>
 <body>
     <a class="title" href="https://www.bombmanual.com/web/index.html" target="_blank">
-        <img src="title.png" alt="Title Image">
+        <img src="images/title.png" alt="Title Image">
     </a>
 
 <!-- 2x2 Grid Container for 4 Simultaneous Modules -->
@@ -23,6 +23,8 @@
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
                     <option value="password">Password</option>
+                    <option value="memory">Memory</option>
+                    <option value="morse">Morse Code</option>
                 </select>
             </div>
             <div id="content-1" class="module-content"></div>
@@ -37,6 +39,8 @@
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
                     <option value="password">Password</option>
+                    <option value="memory">Memory</option>
+                    <option value="morse">Morse Code</option>
                 </select>
             </div>
             <div id="content-2" class="module-content"></div>
@@ -51,6 +55,8 @@
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
                     <option value="password">Password</option>
+                    <option value="memory">Memory</option>
+                    <option value="morse">Morse Code</option>
                 </select>
             </div>
             <div id="content-3" class="module-content"></div>
@@ -65,6 +71,8 @@
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
                     <option value="password">Password</option>
+                    <option value="memory">Memory</option>
+                    <option value="morse">Morse Code</option>
                 </select>
             </div>
             <div id="content-4" class="module-content"></div>
@@ -72,7 +80,7 @@
 
     </div>
 
-    <!-- Simple Wires Template -->
+    <!-- Wires Template -->
     <template id="tpl-wires">
         <div class="module">
             <h2>Wires</h2>
@@ -496,6 +504,200 @@
                 <div class="button-group">
                     <button class="btn generateBtn">Generate Results</button>
                     <button class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Memory Template -->
+    <template id="tpl-memory">
+        <div class="module">
+            <h2>Memory</h2>
+            <div class="memory-container">
+
+                <div class="memory-stages">
+                    <!-- Stage 1 -->
+                    <div class="memory-stage-row" id="m-stage-1">
+                        <span class="memory-stage-title">Stage 1</span>
+                        <div class="memory-display-group" data-stage="1">
+                            <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Display:</span>
+                            <button type="button" class="mem-disp-btn" data-val="1">1</button>
+                            <button type="button" class="mem-disp-btn" data-val="2">2</button>
+                            <button type="button" class="mem-disp-btn" data-val="3">3</button>
+                            <button type="button" class="mem-disp-btn" data-val="4">4</button>
+                        </div>
+                        <div class="memory-action-box" style="display:none;">
+                            <p class="mem-instruction-text">--</p>
+                            
+                            <!-- Position Log Group -->
+                            <div class="memory-input-group">
+                                <div class="memory-options-group pos-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Position:</span>
+                                    <button type="button" class="mem-pos-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-pos-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-pos-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-pos-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+
+                            <!-- Label Log Group -->
+                            <div class="memory-input-group" style="margin-top: 6px;">
+                                <div class="memory-options-group label-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Label:</span>
+                                    <button type="button" class="mem-lbl-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="memory-stage-row" id="m-stage-2" style="opacity: 0.4; pointer-events: none;">
+                        <span class="memory-stage-title">Stage 2</span>
+                        <div class="memory-display-group" data-stage="2">
+                            <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Display:</span>
+                            <button type="button" class="mem-disp-btn" data-val="1">1</button>
+                            <button type="button" class="mem-disp-btn" data-val="2">2</button>
+                            <button type="button" class="mem-disp-btn" data-val="3">3</button>
+                            <button type="button" class="mem-disp-btn" data-val="4">4</button>
+                        </div>
+                        <div class="memory-action-box" style="display:none;">
+                            <p class="mem-instruction-text">--</p>
+                            <div class="memory-input-group">
+                                <div class="memory-options-group pos-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Position:</span>
+                                    <button type="button" class="mem-pos-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-pos-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-pos-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-pos-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                            <div class="memory-input-group" style="margin-top: 6px;">
+                                <div class="memory-options-group label-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Label:</span>
+                                    <button type="button" class="mem-lbl-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="memory-stage-row" id="m-stage-3" style="opacity: 0.4; pointer-events: none;">
+                        <span class="memory-stage-title">Stage 3</span>
+                        <div class="memory-display-group" data-stage="3">
+                            <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Display:</span>
+                            <button type="button" class="mem-disp-btn" data-val="1">1</button>
+                            <button type="button" class="mem-disp-btn" data-val="2">2</button>
+                            <button type="button" class="mem-disp-btn" data-val="3">3</button>
+                            <button type="button" class="mem-disp-btn" data-val="4">4</button>
+                        </div>
+                        <div class="memory-action-box" style="display:none;">
+                            <p class="mem-instruction-text">--</p>
+                            <div class="memory-input-group">
+                                <div class="memory-options-group pos-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Position:</span>
+                                    <button type="button" class="mem-pos-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-pos-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-pos-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-pos-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                            <div class="memory-input-group" style="margin-top: 6px;">
+                                <div class="memory-options-group label-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Label:</span>
+                                    <button type="button" class="mem-lbl-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 4 -->
+                    <div class="memory-stage-row" id="m-stage-4" style="opacity: 0.4; pointer-events: none;">
+                        <span class="memory-stage-title">Stage 4</span>
+                        <div class="memory-display-group" data-stage="4">
+                            <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Display:</span>
+                            <button type="button" class="mem-disp-btn" data-val="1">1</button>
+                            <button type="button" class="mem-disp-btn" data-val="2">2</button>
+                            <button type="button" class="mem-disp-btn" data-val="3">3</button>
+                            <button type="button" class="mem-disp-btn" data-val="4">4</button>
+                        </div>
+                        <div class="memory-action-box" style="display:none;">
+                            <p class="mem-instruction-text">--</p>
+                            <div class="memory-input-group">
+                                <div class="memory-options-group pos-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Position:</span>
+                                    <button type="button" class="mem-pos-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-pos-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-pos-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-pos-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                            <div class="memory-input-group" style="margin-top: 6px;">
+                                <div class="memory-options-group label-options">
+                                    <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Label:</span>
+                                    <button type="button" class="mem-lbl-btn" data-val="1">1</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="2">2</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="3">3</button>
+                                    <button type="button" class="mem-lbl-btn" data-val="4">4</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 5 -->
+                    <div class="memory-stage-row" id="m-stage-5" style="opacity: 0.4; pointer-events: none;">
+                        <span class="memory-stage-title">Stage 5</span>
+                        <div class="memory-display-group" data-stage="5">
+                            <span class="mem-input-label" style="font-size: 14px; color: #aaa;">Display:</span>
+                            <button type="button" class="mem-disp-btn" data-val="1">1</button>
+                            <button type="button" class="mem-disp-btn" data-val="2">2</button>
+                            <button type="button" class="mem-disp-btn" data-val="3">3</button>
+                            <button type="button" class="mem-disp-btn" data-val="4">4</button>
+                        </div>
+                        <div class="memory-action-box" style="display:none;">
+                            <p class="mem-instruction-text">--</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-secondary resetBtn">Reset Module</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Morse Code Template -->
+    <template id="tpl-morse">
+        <div class="module">
+            <h2>Morse Code</h2>
+            <div class="morse-container">
+
+                <!-- Text Input Field -->
+                <div class="morse-input-container">
+                    <input type="text" id="morse-text-input" placeholder="Type dots/dashes here..." autocomplete="off" spellcheck="false" />
+                </div>
+
+                <!-- Matching Frequencies / Words (Displays all at once) -->
+                <div class="morse-results-container" style="margin-top: 10px;">
+                    <span style="font-size: 11px; color: #aaa;">Matching Frequencies:</span>
+                    <div class="morse-word-list">
+                        <!-- Populated dynamically -->
+                        <span class="morse-placeholder-tip">Type sequence above...</span>
+                    </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-secondary resetBtn">Reset Module</button>
                 </div>
             </div>
         </div>
