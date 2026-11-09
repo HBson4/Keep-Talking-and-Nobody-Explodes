@@ -33,6 +33,8 @@ function loadModule(containerId, moduleType) {
             initMemory(container);
         } else if (moduleType === 'morse') {
             initMorse(container);
+        } else if (moduleType === 'whos-on-first') {
+            initWhosOnFirst(container);
         }
     }
 }
@@ -115,13 +117,13 @@ function resetBoard(container) {
     // Reset result boxes
     container.querySelectorAll('.c-wire-result-box').forEach(box => {
         box.textContent = '--';
-        box.style.color = 'inherit';
+        box.style.color = '#fff';
     });
 }
 
 
 // ==========================================
-// PASSWORD MODULE LOGIC
+// PASSWORD MODULE LOGIC (Live Filtering)
 // ==========================================
 const PASSWORD_WORD_BANK = [
     "about", "after", "again", "below", "could",
@@ -134,59 +136,64 @@ const PASSWORD_WORD_BANK = [
 ];
 
 function initPassword(container) {
-    const generateBtn = container.querySelector('.generateBtn');
     const resetBtn = container.querySelector('.resetBtn');
     const inputs = container.querySelectorAll('.pwd-input');
+    const wordListContainer = container.querySelector('.password-word-list');
 
-    generateBtn.addEventListener('click', () => solvePassword(container));
-    resetBtn.addEventListener('click', () => resetPassword(container));
+    function updatePasswordMatches() {
+        const positionLetters = Array.from(inputs).map(input => 
+            input.value.toLowerCase().replace(/[^a-z]/g, '').split('')
+        );
 
+        // Check if all inputs are completely empty
+        const isEmpty = positionLetters.every(arr => arr.length === 0);
+        if (isEmpty) {
+            wordListContainer.innerHTML = `<span class="password-placeholder-tip">Type possible letters above...</span>`;
+            return;
+        }
+
+        // Filter words matching the entered letters per position
+        const matches = PASSWORD_WORD_BANK.filter(word => {
+            for (let i = 0; i < 5; i++) {
+                const lettersForPos = positionLetters[i];
+                if (lettersForPos.length > 0 && !lettersForPos.includes(word[i])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        if (matches.length === 0) {
+            wordListContainer.innerHTML = `<span class="password-placeholder-tip" style="color: #ff5555;">No matching words found</span>`;
+        } else {
+            wordListContainer.innerHTML = matches.map(word => `
+                <div class="password-item">
+                    <span class="word">${word}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Attach live input listener to every box
     inputs.forEach((input, index) => {
         input.addEventListener('input', () => {
-            if (input.value.length === 6 && index < inputs.length - 1) {
+            updatePasswordMatches();
+            // Optional: auto-jump focus if typing multiple letters into one box
+            if (input.value.length >= 6 && index < inputs.length - 1) {
                 inputs[index + 1].focus();
             }
         });
     });
-}
 
-function solvePassword(container) {
-    const inputs = container.querySelectorAll('.pwd-input');
-    const resultDisplay = container.querySelector('.pwd-result');
-
-    const positionLetters = Array.from(inputs).map(input => 
-        input.value.toLowerCase().split('')
-    );
-
-    const matches = PASSWORD_WORD_BANK.filter(word => {
-        for (let i = 0; i < 5; i++) {
-            const lettersForPos = positionLetters[i];
-            if (lettersForPos.length > 0 && !lettersForPos.includes(word[i])) {
-                return false;
-            }
-        }
-        return true;
+    resetBtn.addEventListener('click', () => {
+        inputs.forEach(input => input.value = '');
+        updatePasswordMatches();
+        inputs[0].focus();
     });
 
-    if (matches.length === 1) {
-        resultDisplay.textContent = matches[0].toUpperCase();
-        resultDisplay.style.color = '#07ef22';
-    } else if (matches.length > 1) {
-        resultDisplay.textContent = `${matches.length} MATCHES`;
-        resultDisplay.style.color = '#ffaa00';
-    } else {
-        resultDisplay.textContent = 'NO MATCH';
-        resultDisplay.style.color = 'red';
-    }
+    // Initial render call
+    updatePasswordMatches();
 }
-
-function resetPassword(container) {
-    container.querySelectorAll('.pwd-input').forEach(input => input.value = '');
-    const resultDisplay = container.querySelector('.pwd-result');
-    resultDisplay.textContent = '--';
-    resultDisplay.style.color = '#07ef22';
-}
-
 
 // ==========================================
 // WIRES MODULE LOGIC
@@ -199,7 +206,7 @@ function initSimpleWires(container) {
     const generateBtn = container.querySelector('.generateBtn');
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.wire-cut-result');
-    const serialOddBtn = container.querySelector('.serial-odd-btn');
+    const serialBtn = container.querySelector('.serial-btn');
 
     renderWireRows(3, dynamicContainer); // Default to 3 wires on load
     
@@ -210,9 +217,9 @@ function initSimpleWires(container) {
     resultDisplay.style.color = '#fff';
 
     // Single Serial Odd toggle button logic
-    if (serialOddBtn) {
-        serialOddBtn.addEventListener('click', () => {
-            serialOddBtn.classList.toggle('active');
+    if (serialBtn) {
+        serialBtn.addEventListener('click', () => {
+            serialBtn.classList.toggle('active');
         });
     }
 
@@ -230,13 +237,12 @@ function initSimpleWires(container) {
     generateBtn.addEventListener('click', () => solveSimpleWires(container));
     
     resetBtn.addEventListener('click', () => {
-        countButtons.forEach(b => b.classList.remove('active'));
-        dynamicContainer.innerHTML = '';
+        // Reset color buttons
+        container.querySelectorAll('.dynamic-wires-container input[type="radio"]').forEach(box => box.checked = false);
         resultDisplay.textContent = '--';
-        if (serialOddBtn) serialOddBtn.classList.remove('active');
         resultDisplay.style.color = '#fff';
-        renderWireRows(3, dynamicContainer);
-        defaultBtn.classList.add('active');
+        // Reset serial button
+        if (serialBtn) serialBtn.classList.remove('active');
     });
 }
 
@@ -371,7 +377,7 @@ function solveSimpleWires(container) {
 
 
 // ==========================================
-// WIRE SEQUENCE MODULE LOGIC (Single Panel Stepper)
+// WIRE SEQUENCE MODULE LOGIC (Fixed Reset & Toggleable Radios)
 // ==========================================
 const WIRE_SEQUENCE_RULES = {
     red: {
@@ -412,6 +418,23 @@ function initWireSequence(container) {
         if (nextBtn) nextBtn.disabled = (currentPanel === totalPanels);
     }
 
+    // --- Make radio buttons toggleable (Attached once) ---
+    const radios = container.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+        radio.addEventListener('click', function() {
+            if (this.dataset.checked === "true") {
+                this.checked = false;
+                this.dataset.checked = "false";
+            } else {
+                container.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                    r.dataset.checked = "false";
+                });
+                this.checked = true;
+                this.dataset.checked = "true";
+            }
+        });
+    });
+
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentPanel > 1) {
@@ -430,8 +453,27 @@ function initWireSequence(container) {
         });
     }
 
-    if (generateBtn) generateBtn.addEventListener('click', () => solveWireSequence(container));
-    if (resetBtn) resetBtn.addEventListener('click', () => resetWireSequence(container));
+    if (generateBtn) {
+        generateBtn.addEventListener('click', () => solveWireSequence(container));
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            // 1. Uncheck all radios and clear their toggle state
+            container.querySelectorAll('.seq-wire-row input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+                radio.dataset.checked = "false";
+            });
+            // 2. Clear results
+            container.querySelectorAll('.seq-result').forEach(span => {
+                span.textContent = '--';
+                span.style.color = '#fff';
+            });
+            // 3. Reset panel back to 1 without re-running initWireSequence
+            currentPanel = 1;
+            updatePanelDisplay();
+        });
+    }
 
     updatePanelDisplay();
 }
@@ -477,14 +519,6 @@ function solveWireSequence(container) {
 
         resultSpan.textContent = shouldCut ? 'CUT' : '--';
         resultSpan.style.color = shouldCut ? '#07ef22' : 'red';
-    });
-}
-
-function resetWireSequence(container) {
-    container.querySelectorAll('.seq-wire-row input[type="radio"]').forEach(radio => radio.checked = false);
-    container.querySelectorAll('.seq-result').forEach(span => {
-        span.textContent = '--';
-        span.style.color = 'inherit';
     });
 }
 
@@ -774,7 +808,7 @@ function initMorse(container) {
         const inputVal = textInput.value.replace(/[^.-]/g, '');
         
         if (!inputVal) {
-            wordListContainer.innerHTML = `<span class="morse-placeholder-tip">Type sequence above...</span>`;
+            wordListContainer.innerHTML = `<span class="morse-placeholder-tip"></span>`;
             return;
         }
 
@@ -807,5 +841,135 @@ function initMorse(container) {
     resetBtn.addEventListener('click', () => {
         textInput.value = "";
         updateMatches();
+        textInput.focus();
     });
+}
+
+// ==========================================
+// WHO'S ON FIRST MODULE LOGIC (Enter Key Workflow)
+// ==========================================
+function initWhosOnFirst(container) {
+    const displayInput = container.querySelector('#wof-display-input');
+    const targetInput = container.querySelector('#wof-target-input');
+    const step2Container = container.querySelector('#wof-step-2');
+    const positionPrompt = container.querySelector('#wof-position-prompt');
+    const resultBox = container.querySelector('#wof-result-box');
+    const wordListContainer = container.querySelector('#wof-word-list');
+    const resetBtn = container.querySelector('.resetBtn');
+
+    let resolvedPosition = "";
+
+    const displayPositionMap = {
+        "YES": { index: 1, name: "Middle-Left"},
+        "FIRST": { index: 2, name: "Top-Right"},
+        "DISPLAY": { index: 3, name: "Bottom-Right"},
+        "OKAY": { index: 4, name: "Top-Right"},
+        "SAYS": { index: 5, name: "Bottom-Right"},
+        "NOTHING": { index: 6, name: "Middle-Left"},
+        "": { index: 7, name: "Bottom-Left"},
+        "BLANK": { index: 8, name: "Middle-Right"},
+        "NO": { index: 9, name: "Bottom-Right"},
+        "LED": { index: 10, name: "Middle-Left"},
+        "LEAD": { index: 11, name: "Bottom-Right"},
+        "READ": { index: 12, name: "Middle-Right"},
+        "RED": { index: 13, name: "Middle-Right"},
+        "REED": { index: 14, name: "Bottom-Left"},
+        "LEED": { index: 15, name: "Bottom-Left"},
+        "HOLD ON": { index: 16, name: "Bottom-Right"},
+        "YOU": { index: 17, name: "Middle-Right"},
+        "YOU ARE": { index: 18, name: "Bottom-Right"},
+        "YOUR": { index: 19, name: "Middle-Right"},
+        "YOU'RE": { index: 20, name: "Middle-Right"},
+        "UR": { index: 21, name: "Top-Left"},
+        "THERE": { index: 22, name: "Bottom-Right"},
+        "THEY'RE": { index: 23, name: "Bottom-Left"},
+        "THEIR": { index: 24, name: "Middle-Right"},
+        "THEY ARE": { index: 25, name: "Middle-Left"},
+        "SEE": { index: 26, name: "Bottom-Right"},
+        "C": { index: 27, name: "Top-Right"},
+        "CEE": { index: 28, name: "Bottom-Right"}
+    };
+
+    // Official word lists associated with each button word
+    const wordLists = {
+        "READY": ["YES", "OKAY", "WHAT", "MIDDLE", "LEFT", "PRESS", "RIGHT", "BLANK", "READY", "NO", "FIRST", "UHHH", "NOTHING", "WAIT"],
+        "FIRST": ["LEFT", "OKAY", "YES", "MIDDLE", "NO", "RIGHT", "NOTHING", "UHHH", "WAIT", "READY", "BLANK", "WHAT", "PRESS", "FIRST"],
+        "NO": ["BLANK", "UHHH", "WAIT", "FIRST", "WHAT", "READY", "RIGHT", "YES", "NOTHING", "LEFT", "PRESS", "OKAY", "NO", "MIDDLE"],
+        "BLANK": ["WAIT", "RIGHT", "OKAY", "MIDDLE", "BLANK", "PRESS", "READY", "NOTHING", "NO", "WHAT", "LEFT", "UHHH", "YES", "FIRST"],
+        "NOTHING": ["UHHH", "RIGHT", "OKAY", "MIDDLE", "YES", "BLANK", "NO", "PRESS", "LEFT", "WHAT", "WAIT", "FIRST", "NOTHING", "READY"],
+        "YES": ["OKAY", "RIGHT", "UHHH", "MIDDLE", "FIRST", "WHAT", "PRESS", "READY", "NOTHING", "YES", "LEFT", "BLANK", "NO", "WAIT"],
+        "WHAT": ["UHHH", "WHAT", "LEFT", "NOTHING", "READY", "BLANK", "MIDDLE", "NO", "OKAY", "FIRST", "WAIT", "YES", "PRESS", "RIGHT"],
+        "UHHH": ["READY", "NOTHING", "LEFT", "WHAT", "OKAY", "YES", "RIGHT", "NO", "PRESS", "BLANK", "UHHH", "MIDDLE", "WAIT", "FIRST"],
+        "LEFT": ["RIGHT", "LEFT", "FIRST", "NO", "MIDDLE", "YES", "BLANK", "WHAT", "UHHH", "WAIT", "PRESS", "READY", "OKAY", "NOTHING"],
+        "RIGHT": ["YES", "NOTHING", "READY", "PRESS", "NO", "WAIT", "WHAT", "RIGHT", "MIDDLE", "LEFT", "UHHH", "BLANK", "OKAY", "FIRST"],
+        "MIDDLE": ["BLANK", "READY", "OKAY", "WHAT", "NOTHING", "PRESS", "NO", "WAIT", "LEFT", "MIDDLE", "RIGHT", "FIRST", "UHHH", "YES"],
+        "OKAY": ["MIDDLE", "NO", "FIRST", "YES", "UHHH", "NOTHING", "WAIT", "OKAY", "LEFT", "READY", "BLANK", "PRESS", "WHAT", "RIGHT"],
+        "WAIT": ["UHHH", "NO", "BLANK", "OKAY", "YES", "LEFT", "FIRST", "PRESS", "WHAT", "WAIT", "NOTHING", "READY", "RIGHT", "MIDDLE"],
+        "PRESS": ["RIGHT", "MIDDLE", "YES", "READY", "PRESS", "OKAY", "NOTHING", "UHHH", "BLANK", "LEFT", "FIRST", "WHAT", "NO", "WAIT"],
+        "YOU": ["SURE", "YOU ARE", "YOUR", "YOU'RE", "NEXT", "UH HUH", "UR", "HOLD", "WHAT?", "YOU", "UH UH", "LIKE", "DONE", "U"],
+        "YOU ARE": ["YOUR", "NEXT", "LIKE", "UH HUH", "WHAT?", "DONE", "UH UH", "HOLD", "YOU", "U", "YOU'RE", "SURE", "UR", "YOU ARE"],
+        "YOUR": ["UH UH", "YOU ARE", "UH HUH", "YOUR", "NEXT", "UR", "SURE", "U", "YOU'RE", "YOU", "WHAT?", "HOLD", "LIKE", "DONE"],
+        "YOU'RE": ["YOU", "YOU'RE", "UR", "NEXT", "UH UH", "YOU ARE", "U", "YOUR", "WHAT?", "UH HUH", "SURE", "DONE", "LIKE", "HOLD"],
+        "UR": ["DONE", "U", "UR", "UH HUH", "WHAT?", "SURE", "YOUR", "HOLD", "YOU'RE", "LIKE", "NEXT", "UH UH", "YOU ARE", "YOU"],
+        "U": ["UH HUH", "SURE", "NEXT", "WHAT?", "YOU'RE", "UR", "UH UH", "DONE", "U", "YOU", "LIKE", "HOLD", "YOU ARE", "YOUR"],
+        "UH HUH": ["UH HUH", "YOUR", "YOU ARE", "YOU", "DONE", "HOLD", "UH UH", "NEXT", "SURE", "LIKE", "YOU'RE", "UR", "U", "WHAT?"],
+        "UH UH": ["UR", "U", "YOU ARE", "YOU'RE", "NEXT", "UH UH", "DONE", "YOU", "UH HUH", "LIKE", "YOUR", "SURE", "HOLD", "WHAT?"],
+        "WHAT?": ["YOU", "HOLD", "YOU'RE", "YOUR", "U", "DONE", "UH UH", "LIKE", "YOU ARE", "UH HUH", "UR", "NEXT", "WHAT?", "SURE"],
+        "DONE": ["SURE", "UH HUH", "NEXT", "WHAT?", "YOUR", "UR", "YOU'RE", "HOLD", "LIKE", "YOU", "U", "YOU ARE", "UH UH", "DONE"],
+        "NEXT": ["WHAT?", "UH HUH", "UH UH", "YOUR", "HOLD", "SURE", "NEXT", "LIKE", "DONE", "YOU ARE", "UR", "YOU'RE", "U", "YOU"],
+        "HOLD": ["YOU ARE", "U", "DONE", "UH UH", "YOU", "UR", "SURE", "WHAT?", "YOU'RE", "NEXT", "HOLD", "UH HUH", "YOUR", "LIKE"],
+        "SURE": ["YOU ARE", "DONE", "LIKE", "YOU'RE", "YOU", "HOLD", "UH HUH", "UR", "SURE", "U", "WHAT?", "NEXT", "YOUR", "UH UH"],
+        "LIKE": ["YOU'RE", "NEXT", "U", "UR", "HOLD", "DONE", "UH UH", "WHAT?", "UH HUH", "YOU", "LIKE", "SURE", "YOU ARE", "YOUR"]
+    };
+
+    // Enter key event for Step 1 (Display Word)
+    displayInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const displayVal = displayInput.value.trim().toUpperCase();
+            
+            if (!displayPositionMap.hasOwnProperty(displayVal)) {
+                alert(`Unknown display word "${displayVal}". Check spelling!`);
+                return;
+            }
+
+            resolvedPosition = displayPositionMap[displayVal];
+            
+            positionPrompt.textContent = `${resolvedPosition.name} button`;
+            step2Container.style.display = 'flex';
+            targetInput.focus();
+            displayInput.disabled = true;
+        }
+    });
+
+    // Enter key event for Step 2 (Target Button Word)
+    targetInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const buttonWord = targetInput.value.trim().toUpperCase();
+            const list = wordLists[buttonWord];
+
+            if (!list) {
+                alert(`Unknown button word "${buttonWord}". Check spelling!`);
+                return;
+            }
+
+            wordListContainer.innerHTML = list.map(word => `
+                <div class="wof-word-item">${word}</div>
+            `).join('');
+
+            resultBox.style.display = 'block';
+            targetInput.disabled = true;
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        displayInput.value = '';
+        targetInput.value = '';
+        displayInput.disabled = false;
+        targetInput.disabled = false;
+        step2Container.style.display = 'none';
+        resultBox.style.display = 'none';
+        displayInput.focus();
+    });
+
+    displayInput.focus();
 }
