@@ -177,33 +177,41 @@ input[type="checkbox"] {
     }
 }
 
-/* Toggle Button Styles  */
-.serial-toggle-btn {
-    padding: 8px 16px;
+/* --------------- Toggle button styles --------------- */
+
+/*  Serial Toggle Button Group Styles  */
+.serial-btn-group {
+    display: flex;
+    gap: 4px;
+}
+
+.serial-btn {
+    padding: 6px 14px;
     background-color: #2b2b2b;
     color: #ffffff;
     border: 2px solid #444;
     border-radius: 4px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     user-select: none;
     transition: all 0.1s ease;
 }
 
-.serial-toggle-btn:hover {
+.serial-btn:hover {
+    transform: scale(1.05);
     background-color: #3b3b3b;
     border-color: #d94b28;
 }
 
-/* Active state when clicked/toggled on */
-.serial-toggle-btn.active {
+.serial-btn.active {
     background-color: #bc4325;
     color: #ffffff;
     border-color: #fff;
 }
 
+/* Parallel Toggle Button Group Styles */
 .parallel-toggle-btn {
     padding: 8px 16px;
     background-color: #2b2b2b;
@@ -221,15 +229,16 @@ input[type="checkbox"] {
 .parallel-toggle-btn:hover {
     background-color: #3b3b3b;
     border-color: #d94b28;
+    transform: scale(1.05);
 }
 
-/* Active state when clicked/toggled on */
 .parallel-toggle-btn.active {
     background-color: #bc4325;
     color: #ffffff;
     border-color: #fff;
 }
 
+/* Batteries Toggle Button Group Styles */
 .batteries-toggle-btn {
     padding: 8px 16px;
     background-color: #2b2b2b;
@@ -247,9 +256,9 @@ input[type="checkbox"] {
 .batteries-toggle-btn:hover {
     background-color: #3b3b3b;
     border-color: #d94b28;
+    transform: scale(1.05);
 }
 
-/* Active state when clicked/toggled on */
 .batteries-toggle-btn.active {
     background-color: #bc4325;
     color: #ffffff;
@@ -257,7 +266,7 @@ input[type="checkbox"] {
 }
 
 
-/* --------------- Complicated Wires Vertical Column Layout Styles --------------- */
+/* --------------- Complicated Wires Styles --------------- */
 
 .c-wires-container {
     display: flex;
@@ -390,16 +399,16 @@ input[type="checkbox"] {
     font-size: 18px;
     font-family: monospace;
     text-transform: uppercase;
-    background-color: #2b2b2b;
+    background-color: #222;
     color: #ffffff;
-    border: 2px solid #bc4325;
+    border: 2px solid #444;
     border-radius: 4px;
     outline: none;
     box-sizing: border-box;
 }
 
 .pwd-input:focus {
-    border-color: #07ef22;
+    border-color: #bc4325;
 }
 
 .password-result-display {
@@ -414,6 +423,51 @@ input[type="checkbox"] {
     color: #07ef22;
     margin-left: 8px;
     letter-spacing: 2px;
+}
+
+/* -- Password Results List Styles -- */
+.password-results-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px dashed #555;
+    padding: 8px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.password-word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.password-item {
+    display: flex;
+    justify-content: space-between;
+    background: #1e1e1e;
+    padding: 6px 10px;
+    border-radius: 3px;
+    border: 1px solid #333;
+    font-size: 16px;
+}
+
+.password-item .word {
+    font-weight: bold;
+    color: #07ef22;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.password-placeholder-tip {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+    text-align: center;
+    padding: 10px 0;
 }
 
 
@@ -465,7 +519,7 @@ input[type="checkbox"] {
 .wire-count-btn {
     padding: 6px 14px;
     border-radius: 3px;
-    border: 1px solid #444;
+    border: 2px solid #444;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -479,6 +533,7 @@ input[type="checkbox"] {
 .wire-count-btn:hover {
     transform: scale(1.05);
     background-color: #333;
+    border-color: #bc4325;
 }
 
 /* Active highlighted state when clicked */
@@ -563,38 +618,6 @@ input[type="checkbox"] {
     margin-left: 6px;
 }
 
-/*  Serial Toggle Button Group Styles  */
-.serial-btn-group {
-    display: flex;
-    gap: 4px;
-}
-
-.serial-btn {
-    padding: 6px 14px;
-    background-color: #2b2b2b;
-    color: #ffffff;
-    border: 2px solid #444;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: bold;
-    user-select: none;
-    transition: all 0.1s ease;
-}
-
-.serial-btn:hover {
-    background-color: #3b3b3b;
-    border-color: #d94b28;
-}
-
-/* Active state when selected */
-.serial-btn.active {
-    background-color: #bc4325;
-    color: #ffffff;
-    border-color: #fff;
-}
-
 
 /* --------------- Wire Sequence Module Styles (Stepper) --------------- */
 
@@ -621,7 +644,7 @@ input[type="checkbox"] {
     padding: 6px 12px;
     background-color: #2b2b2b;
     color: #ffffff;
-    border: 2px solid #bc4325;
+    border: 2px solid #444;
     border-radius: 4px;
     cursor: pointer;
     font-size: 13px;
@@ -631,7 +654,8 @@ input[type="checkbox"] {
 
 .btn-nav:hover:not(:disabled) {
     background-color: #3b3b3b;
-    border-color: #d94b28;
+    border-color: #bc4325;
+    transform: scale(1.05);
 }
 
 .btn-nav:disabled {
@@ -879,7 +903,7 @@ input[type="checkbox"] {
     background-color: #222;
     border: 1px solid #444;
     border-radius: 3px;
-    color: #07ef22;
+    color: #fff;
     font-size: 16px;
     font-family: monospace;
     font-weight: bold;
@@ -890,7 +914,7 @@ input[type="checkbox"] {
 
 #morse-text-input:focus {
     outline: none;
-    border-color: #07ef22;
+    border-color: #aaa;
 }
 
 .morse-results-container {
@@ -910,6 +934,10 @@ input[type="checkbox"] {
     flex-direction: column;
     gap: 4px;
     /* No max-height or overflow so everything displays at once */
+    max-height: 25vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #333;
 }
 
 .morse-item {
@@ -919,7 +947,7 @@ input[type="checkbox"] {
     padding: 5px 8px;
     border-radius: 3px;
     border: 1px solid #333;
-    font-size: 12px;
+    font-size: 16px;
 }
 
 .morse-item .word {
@@ -930,6 +958,8 @@ input[type="checkbox"] {
 
 .morse-item .freq {
     color: #07ef22;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .morse-placeholder-tip {
@@ -938,4 +968,87 @@ input[type="checkbox"] {
     font-style: italic;
     text-align: center;
     padding: 10px 0;
+}
+
+/* --------------- Who's on First Styles --------------- */
+.wof-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.wof-step {
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.wof-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.wof-text-input {
+    width: 100%;
+    padding: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 16px;
+    font-family: monospace;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.wof-text-input:focus {
+    outline: none;
+    border-color: #aaa;
+}
+
+.wof-action-box {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px dashed #aaa;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+.wof-instruction-title {
+    font-size: 18px;
+    color: #07ef22;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.wof-word-item {
+    background: #1e1e1e;
+    padding: 6px 10px;
+    border-radius: 3px;
+    border: 1px solid #333;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+#wof-word-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 25vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #333;
 }
