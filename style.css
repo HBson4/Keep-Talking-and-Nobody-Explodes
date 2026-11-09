@@ -6,13 +6,10 @@ body {
 }
 
 .title img {
-    width: 100%;
     max-width: 450px;
     display: block;
     margin: 0 auto 20px auto;
 }
-
-/* --------------- 2x2 Grid Layout --------------- */
 
 .modules-container {
     display: grid;
@@ -333,13 +330,15 @@ input[type="checkbox"] {
 .badge-light { color: #ffdb4d; border-color: #cca600; }
 .badge-red { color: #ff4d4d; border-color: #dc3545; }
 .badge-blue { color: #4da6ff; border-color: #0056b3; }
-.badge-star { color: #ffffff; border-color: #777; }
+.badge-white { color: #ffffff; border-color: #777; }
+.badge-star { color: #aaa; border-color: #555; }
 
 /* Selected State */
 .c-wire-col input[type="checkbox"]:checked + .badge-light { background-color: #ffdb4d; color: #000; border-color: #fff; }
 .c-wire-col input[type="checkbox"]:checked + .badge-red { background-color: #ff4d4d; color: #000; border-color: #fff; }
 .c-wire-col input[type="checkbox"]:checked + .badge-blue { background-color: #4da6ff; color: #000; border-color: #fff; }
-.c-wire-col input[type="checkbox"]:checked + .badge-star { background-color: #ffffff; color: #000; border-color: #fff; }
+.c-wire-col input[type="checkbox"]:checked + .badge-white { background-color: #ffffff; color: #000; border-color: #fff; }
+.c-wire-col input[type="checkbox"]:checked + .badge-star { background-color: #444; color: #fff; border-color: #fff; }
 
 .c-wire-result-box {
     margin-top: 4px;
@@ -1047,8 +1046,4 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    max-height: 25vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #555 #333;
 }
