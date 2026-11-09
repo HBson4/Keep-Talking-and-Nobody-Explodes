@@ -8,7 +8,7 @@
 </head>
 <body>
     <a class="title" href="https://www.bombmanual.com/web/index.html" target="_blank">
-        <img src="title.png" alt="Title Image">
+        <img src="images/title.png" alt="Title Image">
     </a>
 
 <!-- 2x2 Grid Container for 4 Simultaneous Modules -->
@@ -25,6 +25,7 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
+                    <option value="whos-on-first">Who's on First</option>
                 </select>
             </div>
             <div id="content-1" class="module-content"></div>
@@ -41,6 +42,7 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
+                    <option value="whos-on-first">Who's on First</option>
                 </select>
             </div>
             <div id="content-2" class="module-content"></div>
@@ -57,6 +59,7 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
+                    <option value="whos-on-first">Who's on First</option>
                 </select>
             </div>
             <div id="content-3" class="module-content"></div>
@@ -73,6 +76,7 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
+                    <option value="whos-on-first">Who's on First</option>
                 </select>
             </div>
             <div id="content-4" class="module-content"></div>
@@ -96,7 +100,7 @@
 
                 <div class="cWiresInfo" style="justify-content: center; margin: 15px 0;">
                     <div class="info-group">
-                        <button type="button" class="serial-toggle-btn serial-odd-btn">Serial # Odd</button>
+                        <button type="button" class="serial-btn">Serial # Odd</button>
                     </div>
                 </div>
 
@@ -232,13 +236,13 @@
 
                 <div class="cWiresInfo" style="margin-top: 15px;">
                     <div class="info-group">
-                        <button type="button" class="parallel-toggle-btn">Parallel Port?</button>
+                        <button type="button" class="parallel-toggle-btn">Parallel Port</button>
                     </div>
                     <div class="info-group">
-                        <button type="button" class="batteries-toggle-btn">2+ Batteries?</button>
+                        <button type="button" class="batteries-toggle-btn">2+ Batteries</button>
                     </div>
                     <div class="info-group">
-                        <button type="button" class="serial-toggle-btn serial-even-btn">Serial # Even</button>
+                        <button type="button" class="serial-btn">Serial # Even</button>
                     </div>
                 </div>
 
@@ -258,7 +262,7 @@
                 <!-- Stepper Navigation Bar -->
                 <div class="seq-nav-bar">
                     <button type="button" class="btn-nav prev-panel-btn">← Back</button>
-                    <span class="panel-indicator"><span id="active-panel-num">1</span> of 4</span>
+                    <span class="panel-indicator"><span id="active-panel-num">1</span> / 4</span>
                     <button type="button" class="btn-nav next-panel-btn">Next →</button>
                 </div>
 
@@ -475,35 +479,37 @@
                 <div class="password-inputs">
                     <div class="input-col">
                         <label>Pos 1</label>
-                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." autocomplete="off" spellcheck="false" />
                     </div>
                     <div class="input-col">
                         <label>Pos 2</label>
-                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." autocomplete="off" spellcheck="false" />
                     </div>
                     <div class="input-col">
                         <label>Pos 3</label>
-                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." autocomplete="off" spellcheck="false" />
                     </div>
                     <div class="input-col">
                         <label>Pos 4</label>
-                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." autocomplete="off" spellcheck="false" />
                     </div>
                     <div class="input-col">
                         <label>Pos 5</label>
-                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." />
+                        <input type="text" class="pwd-input" maxlength="6" placeholder="abc..." autocomplete="off" spellcheck="false" />
                     </div>
                 </div>
 
-                <!-- Result Display -->
-                <div class="password-result-display">
-                    Result: <span class="pwd-result">--</span>
+                <!-- Dynamic Matching Words List -->
+                <div class="password-results-container">
+                    <span style="font-size: 11px; color: #aaa;">Matching Words:</span>
+                    <div class="password-word-list">
+                        <span class="password-placeholder-tip">Type possible letters above...</span>
+                    </div>
                 </div>
 
-                <!-- Buttons Centered Below -->
-                <div class="button-group">
-                    <button class="btn generateBtn">Generate Results</button>
-                    <button class="btn btn-secondary resetBtn">Reset</button>
+                <!-- Reset Button -->
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-secondary resetBtn">Reset</button>
                 </div>
             </div>
         </div>
@@ -684,7 +690,7 @@
 
                 <!-- Text Input Field -->
                 <div class="morse-input-container">
-                    <input type="text" id="morse-text-input" placeholder="Type dots/dashes here..." autocomplete="off" spellcheck="false" />
+                    <input type="text" id="morse-text-input" placeholder="Type dots/dashes..." autocomplete="off" spellcheck="false" />
                 </div>
 
                 <!-- Matching Frequencies / Words (Displays all at once) -->
@@ -692,12 +698,47 @@
                     <span style="font-size: 11px; color: #aaa;">Matching Frequencies:</span>
                     <div class="morse-word-list">
                         <!-- Populated dynamically -->
-                        <span class="morse-placeholder-tip">Type sequence above...</span>
+                        <span class="morse-placeholder-tip"></span>
                     </div>
                 </div>
 
                 <div class="button-group" style="margin-top: 15px;">
-                    <button type="button" class="btn btn-secondary resetBtn">Reset Module</button>
+                    <button type="button" class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Who's on First Template -->
+    <template id="tpl-whos-on-first">
+        <div class="module">
+            <h2>Who's on First</h2>
+            <div class="wof-container">
+                
+                <!-- Step 1: Display Word -->
+                <div class="wof-step" id="wof-step-1">
+                    <div class="wof-section">
+                        <input type="text" id="wof-display-input" class="wof-text-input" placeholder="Display word..." autocomplete="off" spellcheck="false" />
+                    </div>
+                </div>
+
+                <!-- Step 2: Button Word Input (Hidden Initially) -->
+                <div class="wof-step" id="wof-step-2" style="display: none;">
+                    <p class="wof-instruction-title" id="wof-position-prompt">[Position]</p>
+                    <div class="wof-section" style="margin-top: 6px;">
+                        <input type="text" id="wof-target-input" class="wof-text-input" placeholder="Button word..." autocomplete="off" spellcheck="false" />
+                    </div>
+                </div>
+
+                <!-- Final Results Display (Hidden Initially) -->
+                <div class="wof-action-box" id="wof-result-box" style="display: none;">
+                    <div id="wof-word-list" style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-secondary resetBtn">Reset</button>
                 </div>
             </div>
         </div>
