@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Attach change listeners to all 4 slot selectors in the 2x2 grid
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 2; i++) {
         const selector = document.getElementById(`select-${i}`);
         if (selector) {
             selector.addEventListener('change', (e) => loadModule(`content-${i}`, e.target.value));
@@ -60,28 +59,41 @@ function initComplicatedWires(container) {
 }
 
 function solveWires(container) {
-    // Read state from the toggle buttons using .active class
-    const parallelBtn = container.querySelector('.parallel-btn') || container.querySelector('.parallel-toggle-btn');
+    const parallelBtn = container.querySelector('.parallel-toggle-btn');
     const parallel = parallelBtn ? parallelBtn.classList.contains('active') : false;
 
-    const batteryBtn = container.querySelector('.battery-btn') || container.querySelector('.battery-toggle-btn');
+    // Changed from battery-toggle-btn to batteries-toggle-btn
+    const batteryBtn = container.querySelector('.batteries-toggle-btn');
     const batteries = batteryBtn ? batteryBtn.classList.contains('active') : false;
     
-    const evenBtn = container.querySelector('.serial-even-btn');
+    // Changed from serial-even-btn to serial-btn
+    const evenBtn = container.querySelector('.serial-btn');
     const serialEven = evenBtn ? evenBtn.classList.contains('active') : false;
-
     const wireCols = container.querySelectorAll('.c-wire-col');
     const lookupKey = {
-        '': 'C', 'L': 'D', 'S': 'C', 'LS': 'Bat',
-        'R': '#', 'RS': 'C', 'LR': 'Bat', 'LRS': 'Bat',
-        'B': '#', 'BS': 'D', 'LB': 'P', 'LBS': 'P',
-        'RB': '#', 'RBS': 'P', 'LRB': '#', 'LRBS': 'D'
+        'W': 'C',
+        'L': 'D',
+        'S': 'C',
+        'LS': 'Bat',
+        'R': '#',
+        'RS': 'C',
+        'LR': 'Bat',
+        'LRS': 'Bat',
+        'B': '#',
+        'BS': 'D',
+        'LB': 'P',
+        'LBS': 'P',
+        'RB': '#',
+        'RBS': 'P',
+        'LRB': '#',
+        'LRBS': 'D'
     };
 
     wireCols.forEach(col => {
         const light = col.querySelector('.badge-light').previousElementSibling.checked;
         const red = col.querySelector('.badge-red').previousElementSibling.checked;
         const blue = col.querySelector('.badge-blue').previousElementSibling.checked;
+        const white = col.querySelector('.badge-white').previousElementSibling.checked;
         const star = col.querySelector('.badge-star').previousElementSibling.checked;
         const resultBox = col.querySelector('.wire-result');
 
@@ -89,17 +101,18 @@ function solveWires(container) {
         if (light) key += 'L';
         if (red) key += 'R';
         if (blue) key += 'B';
+        if (white) key += 'W';
         if (star) key += 'S';
 
         const instruction = lookupKey[key];
         let cut = false;
 
         switch (instruction) {
-            case 'C': cut = true; break;
-            case 'D': cut = false; break;
-            case 'P': cut = parallel; break;
-            case 'Bat': cut = batteries; break;
-            case '#': cut = serialEven; break;
+            case 'C': cut = true; break; // Cut
+            case 'D': cut = false; break; // Don't cut
+            case 'P': cut = parallel; break; // Cut if parallel port present
+            case 'Bat': cut = batteries; break; // Cut if 2 or more batteries
+            case '#': cut = serialEven; break; // Cut if last digit of serial is even
         }
 
         resultBox.textContent = cut ? 'CUT' : '--';
@@ -196,7 +209,7 @@ function initPassword(container) {
 }
 
 // ==========================================
-// WIRES MODULE LOGIC
+// WIRES MODULE LOGIC (Corrected)
 // ==========================================
 const AVAILABLE_COLORS = ['black', 'blue', 'white', 'red', 'yellow'];
 
@@ -206,24 +219,23 @@ function initSimpleWires(container) {
     const generateBtn = container.querySelector('.generateBtn');
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.wire-cut-result');
-    const serialBtn = container.querySelector('.serial-btn');
+    
+    // Use a consistent selector for the serial odd toggle button
+    const serialBtn = container.querySelector('.serial-btn') || container.querySelector('.serial-odd-btn');
 
     renderWireRows(3, dynamicContainer); // Default to 3 wires on load
     
-    // Set the first count button as active by default
     const defaultBtn = container.querySelector('.wire-count-btn[data-count="3"]');
     if (defaultBtn) defaultBtn.classList.add('active');
 
     resultDisplay.style.color = '#fff';
 
-    // Single Serial Odd toggle button logic
     if (serialBtn) {
         serialBtn.addEventListener('click', () => {
             serialBtn.classList.toggle('active');
         });
     }
 
-    // Wire count button toggle and row rendering
     countButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             countButtons.forEach(b => b.classList.remove('active'));
@@ -237,11 +249,9 @@ function initSimpleWires(container) {
     generateBtn.addEventListener('click', () => solveSimpleWires(container));
     
     resetBtn.addEventListener('click', () => {
-        // Reset color buttons
         container.querySelectorAll('.dynamic-wires-container input[type="radio"]').forEach(box => box.checked = false);
         resultDisplay.textContent = '--';
         resultDisplay.style.color = '#fff';
-        // Reset serial button
         if (serialBtn) serialBtn.classList.remove('active');
     });
 }
@@ -285,8 +295,8 @@ function solveSimpleWires(container) {
     const resultDisplay = container.querySelector('.wire-cut-result');
     const wireRows = container.querySelectorAll('.wire-row');
     
-    const oddBtn = container.querySelector('.serial-odd-btn');
-    const serialOdd = oddBtn ? oddBtn.classList.contains('active') : false;
+    const serialBtn = container.querySelector('.serial-btn') || container.querySelector('.serial-odd-btn');
+    const serialOdd = serialBtn ? serialBtn.classList.contains('active') : false;
 
     if (wireRows.length === 0) {
         resultDisplay.textContent = 'SELECT COUNT';
@@ -302,7 +312,7 @@ function solveSimpleWires(container) {
         if (!selected) {
             incomplete = true;
         } else {
-            wires.push(selected.value);
+            wires.push(selected.value); // index 0 is Wire 1, index length-1 is Last Wire
         }
     });
 
@@ -315,50 +325,52 @@ function solveSimpleWires(container) {
     const count = wires.length;
     let cutInstruction = '';
 
+    // Helper functions to find specific wire positions (1-based text output)
+    const lastWire = () => wires[wires.length - 1];
+    const countColor = (col) => wires.filter(c => c === col).length;
+    const lastIndexOfColor = (col) => wires.lastIndexOf(col) + 1; // 1-based position
+
     if (count === 3) {
         if (!wires.includes('red')) {
             cutInstruction = 'Second Wire';
-        } else if (wires[wires.length - 1] === 'white') {
+        } else if (lastWire() === 'white') {
             cutInstruction = 'Last Wire';
-        } else if (wires.filter(c => c === 'blue').length > 1) {
-            cutInstruction = 'Last Blue Wire';
+        } else if (countColor('blue') > 1) {
+            cutInstruction = `Last Blue Wire (Wire ${lastIndexOfColor('blue')})`;
         } else {
             cutInstruction = 'Last Wire';
         }
     } else if (count === 4) {
-        const redCount = wires.filter(c => c === 'red').length;
-        const yellowCount = wires.filter(c => c === 'yellow').length;
-        const blueCount = wires.filter(c => c === 'blue').length;
-
+        const redCount = countColor('red');
+        const blueCount = countColor('blue');
+        
         if (redCount > 1 && serialOdd) {
-            cutInstruction = 'Last Red Wire';
-        } else if (wires[3] === 'yellow' && redCount === 0) {
+            cutInstruction = `Last Red Wire (Wire ${lastIndexOfColor('red')})`;
+        } else if (lastWire() === 'yellow' && redCount === 0) {
             cutInstruction = 'First Wire';
         } else if (blueCount === 1) {
             cutInstruction = 'First Wire';
-        } else if (yellowCount > 1) {
+        } else if (countColor('yellow') > 1) {
             cutInstruction = 'Last Wire';
         } else {
             cutInstruction = 'Second Wire';
         }
     } else if (count === 5) {
-        const blackCount = wires.filter(c => c === 'black').length;
-        const redCount = wires.filter(c => c === 'red').length;
-        const yellowCount = wires.filter(c => c === 'yellow').length;
-
-        if (wires[4] === 'black' && serialOdd) {
+        const redCount = countColor('red');
+        
+        if (lastWire() === 'black' && serialOdd) {
             cutInstruction = 'Fourth Wire';
-        } else if (redCount === 1 && yellowCount > 1) {
+        } else if (redCount === 1 && countColor('yellow') > 1) {
             cutInstruction = 'First Wire';
-        } else if (blackCount === 0) {
+        } else if (countColor('black') === 0) {
             cutInstruction = 'Second Wire';
         } else {
             cutInstruction = 'First Wire';
         }
     } else if (count === 6) {
-        const yellowCount = wires.filter(c => c === 'yellow').length;
-        const whiteCount = wires.filter(c => c === 'white').length;
-        const redCount = wires.filter(c => c === 'red').length;
+        const yellowCount = countColor('yellow');
+        const whiteCount = countColor('white');
+        const redCount = countColor('red');
 
         if (yellowCount === 0 && serialOdd) {
             cutInstruction = 'Third Wire';
@@ -377,7 +389,7 @@ function solveSimpleWires(container) {
 
 
 // ==========================================
-// WIRE SEQUENCE MODULE LOGIC (Fixed Reset & Toggleable Radios)
+// WIRE SEQUENCE MODULE LOGIC
 // ==========================================
 const WIRE_SEQUENCE_RULES = {
     red: {
