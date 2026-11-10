@@ -7,6 +7,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const globalToggles = document.querySelectorAll('.global-toggle-btn');
+    
+    globalToggles.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const property = btn.getAttribute('data-property');
+            
+            // Make Serial Odd and Serial Even mutually exclusive
+            if (property === 'serial-odd' && !btn.classList.contains('active')) {
+                const evenBtn = document.querySelector('.global-toggle-btn[data-property="serial-even"]');
+                if (evenBtn) evenBtn.classList.remove('active');
+            } else if (property === 'serial-even' && !btn.classList.contains('active')) {
+                const oddBtn = document.querySelector('.global-toggle-btn[data-property="serial-odd"]');
+                if (oddBtn) oddBtn.classList.remove('active');
+            }
+
+            btn.classList.toggle('active');
+        });
+    });
+});
+
 // Load chosen module HTML from template into target container
 function loadModule(containerId, moduleType) {
     const container = document.getElementById(containerId);
@@ -28,6 +49,8 @@ function loadModule(containerId, moduleType) {
             initSimpleWires(container);
         } else if (moduleType === 'wireSequence') {
             initWireSequence(container);
+        } else if (moduleType === 'keypads') {
+            initKeypads(container);
         } else if (moduleType === 'memory') {
             initMemory(container);
         } else if (moduleType === 'morse') {
@@ -38,178 +61,8 @@ function loadModule(containerId, moduleType) {
     }
 }
 
-
 // ==========================================
-// COMPLICATED WIRES MODULE LOGIC
-// ==========================================
-function initComplicatedWires(container) {
-    const generateBtn = container.querySelector('.generateBtn');
-    const resetBtn = container.querySelector('.resetBtn');
-
-    // Make all toggle buttons inside the info section interactive
-    const toggleButtons = container.querySelectorAll('.cWiresInfo button');
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.classList.toggle('active');
-        });
-    });
-
-    generateBtn.addEventListener('click', () => solveWires(container));
-    resetBtn.addEventListener('click', () => resetBoard(container));
-}
-
-function solveWires(container) {
-    const parallelBtn = container.querySelector('.parallel-toggle-btn');
-    const parallel = parallelBtn ? parallelBtn.classList.contains('active') : false;
-
-    // Changed from battery-toggle-btn to batteries-toggle-btn
-    const batteryBtn = container.querySelector('.batteries-toggle-btn');
-    const batteries = batteryBtn ? batteryBtn.classList.contains('active') : false;
-    
-    // Changed from serial-even-btn to serial-btn
-    const evenBtn = container.querySelector('.serial-btn');
-    const serialEven = evenBtn ? evenBtn.classList.contains('active') : false;
-    const wireCols = container.querySelectorAll('.c-wire-col');
-    const lookupKey = {
-        'W': 'C',
-        'L': 'D',
-        'S': 'C',
-        'LS': 'Bat',
-        'R': '#',
-        'RS': 'C',
-        'LR': 'Bat',
-        'LRS': 'Bat',
-        'B': '#',
-        'BS': 'D',
-        'LB': 'P',
-        'LBS': 'P',
-        'RB': '#',
-        'RBS': 'P',
-        'LRB': '#',
-        'LRBS': 'D'
-    };
-
-    wireCols.forEach(col => {
-        const light = col.querySelector('.badge-light').previousElementSibling.checked;
-        const red = col.querySelector('.badge-red').previousElementSibling.checked;
-        const blue = col.querySelector('.badge-blue').previousElementSibling.checked;
-        const white = col.querySelector('.badge-white').previousElementSibling.checked;
-        const star = col.querySelector('.badge-star').previousElementSibling.checked;
-        const resultBox = col.querySelector('.wire-result');
-
-        let key = '';
-        if (light) key += 'L';
-        if (red) key += 'R';
-        if (blue) key += 'B';
-        if (white) key += 'W';
-        if (star) key += 'S';
-
-        const instruction = lookupKey[key];
-        let cut = false;
-
-        switch (instruction) {
-            case 'C': cut = true; break; // Cut
-            case 'D': cut = false; break; // Don't cut
-            case 'P': cut = parallel; break; // Cut if parallel port present
-            case 'Bat': cut = batteries; break; // Cut if 2 or more batteries
-            case '#': cut = serialEven; break; // Cut if last digit of serial is even
-        }
-
-        resultBox.textContent = cut ? 'CUT' : '--';
-        resultBox.style.color = cut ? '#07ef22' : 'red';
-    });
-}
-
-function resetBoard(container) {
-    // Uncheck wire checkboxes
-    container.querySelectorAll('.module input[type="checkbox"]').forEach(box => box.checked = false);
-    
-    // Remove active class from all toggle buttons in this module
-    container.querySelectorAll('.cWiresInfo button').forEach(btn => btn.classList.remove('active'));
-    
-    // Reset result boxes
-    container.querySelectorAll('.c-wire-result-box').forEach(box => {
-        box.textContent = '--';
-        box.style.color = '#fff';
-    });
-}
-
-
-// ==========================================
-// PASSWORD MODULE LOGIC (Live Filtering)
-// ==========================================
-const PASSWORD_WORD_BANK = [
-    "about", "after", "again", "below", "could",
-    "every", "first", "found", "great", "house",
-    "large", "learn", "never", "other", "place",
-    "plant", "point", "right", "small", "sound",
-    "spell", "still", "study", "their", "there",
-    "these", "thing", "think", "three", "water",
-    "where", "which", "world", "would", "write"
-];
-
-function initPassword(container) {
-    const resetBtn = container.querySelector('.resetBtn');
-    const inputs = container.querySelectorAll('.pwd-input');
-    const wordListContainer = container.querySelector('.password-word-list');
-
-    function updatePasswordMatches() {
-        const positionLetters = Array.from(inputs).map(input => 
-            input.value.toLowerCase().replace(/[^a-z]/g, '').split('')
-        );
-
-        // Check if all inputs are completely empty
-        const isEmpty = positionLetters.every(arr => arr.length === 0);
-        if (isEmpty) {
-            wordListContainer.innerHTML = `<span class="password-placeholder-tip">Type possible letters above...</span>`;
-            return;
-        }
-
-        // Filter words matching the entered letters per position
-        const matches = PASSWORD_WORD_BANK.filter(word => {
-            for (let i = 0; i < 5; i++) {
-                const lettersForPos = positionLetters[i];
-                if (lettersForPos.length > 0 && !lettersForPos.includes(word[i])) {
-                    return false;
-                }
-            }
-            return true;
-        });
-
-        if (matches.length === 0) {
-            wordListContainer.innerHTML = `<span class="password-placeholder-tip" style="color: #ff5555;">No matching words found</span>`;
-        } else {
-            wordListContainer.innerHTML = matches.map(word => `
-                <div class="password-item">
-                    <span class="word">${word}</span>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Attach live input listener to every box
-    inputs.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            updatePasswordMatches();
-            // Optional: auto-jump focus if typing multiple letters into one box
-            if (input.value.length >= 6 && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-        });
-    });
-
-    resetBtn.addEventListener('click', () => {
-        inputs.forEach(input => input.value = '');
-        updatePasswordMatches();
-        inputs[0].focus();
-    });
-
-    // Initial render call
-    updatePasswordMatches();
-}
-
-// ==========================================
-// WIRES MODULE LOGIC (Corrected)
+// WIRES MODULE LOGIC
 // ==========================================
 const AVAILABLE_COLORS = ['black', 'blue', 'white', 'red', 'yellow'];
 
@@ -219,9 +72,6 @@ function initSimpleWires(container) {
     const generateBtn = container.querySelector('.generateBtn');
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.wire-cut-result');
-    
-    // Use a consistent selector for the serial odd toggle button
-    const serialBtn = container.querySelector('.serial-btn') || container.querySelector('.serial-odd-btn');
 
     renderWireRows(3, dynamicContainer); // Default to 3 wires on load
     
@@ -229,12 +79,6 @@ function initSimpleWires(container) {
     if (defaultBtn) defaultBtn.classList.add('active');
 
     resultDisplay.style.color = '#fff';
-
-    if (serialBtn) {
-        serialBtn.addEventListener('click', () => {
-            serialBtn.classList.toggle('active');
-        });
-    }
 
     countButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -252,7 +96,7 @@ function initSimpleWires(container) {
         container.querySelectorAll('.dynamic-wires-container input[type="radio"]').forEach(box => box.checked = false);
         resultDisplay.textContent = '--';
         resultDisplay.style.color = '#fff';
-        if (serialBtn) serialBtn.classList.remove('active');
+        // Note: Global status bar buttons are reset globally, not per-module reset.
     });
 }
 
@@ -295,8 +139,9 @@ function solveSimpleWires(container) {
     const resultDisplay = container.querySelector('.wire-cut-result');
     const wireRows = container.querySelectorAll('.wire-row');
     
-    const serialBtn = container.querySelector('.serial-btn') || container.querySelector('.serial-odd-btn');
-    const serialOdd = serialBtn ? serialBtn.classList.contains('active') : false;
+    // Read the serial odd status globally from the header status bar
+    const globalSerialBtn = document.querySelector('.global-toggle-btn[data-property="serial-odd"]');
+    const serialOdd = globalSerialBtn ? globalSerialBtn.classList.contains('active') : false;
 
     if (wireRows.length === 0) {
         resultDisplay.textContent = 'SELECT COUNT';
@@ -312,7 +157,7 @@ function solveSimpleWires(container) {
         if (!selected) {
             incomplete = true;
         } else {
-            wires.push(selected.value); // index 0 is Wire 1, index length-1 is Last Wire
+            wires.push(selected.value);
         }
     });
 
@@ -325,10 +170,9 @@ function solveSimpleWires(container) {
     const count = wires.length;
     let cutInstruction = '';
 
-    // Helper functions to find specific wire positions (1-based text output)
     const lastWire = () => wires[wires.length - 1];
     const countColor = (col) => wires.filter(c => c === col).length;
-    const lastIndexOfColor = (col) => wires.lastIndexOf(col) + 1; // 1-based position
+    const lastIndexOfColor = (col) => wires.lastIndexOf(col) + 1;
 
     if (count === 3) {
         if (!wires.includes('red')) {
@@ -389,8 +233,113 @@ function solveSimpleWires(container) {
 
 
 // ==========================================
-// WIRE SEQUENCE MODULE LOGIC
+// COMPLICATED WIRES MODULE LOGIC (Global Status Bar)
 // ==========================================
+function initComplicatedWires(container) {
+    const generateBtn = container.querySelector('.generateBtn');
+    const resetBtn = container.querySelector('.resetBtn');
+
+    generateBtn.addEventListener('click', () => solveWires(container));
+    resetBtn.addEventListener('click', () => resetBoard(container));
+}
+
+function solveWires(container) {
+    // Read state directly from the global status bar at the top of the page
+    const parallelBtn = document.querySelector('.global-toggle-btn[data-property="parallel"]');
+    const parallel = parallelBtn ? parallelBtn.classList.contains('active') : false;
+
+    const batteryBtn = document.querySelector('.global-toggle-btn[data-property="batteries"]');
+    const batteries = batteryBtn ? batteryBtn.classList.contains('active') : false;
+    
+    const evenBtn = document.querySelector('.global-toggle-btn[data-property="serial-even"]');
+    const serialEven = evenBtn ? evenBtn.classList.contains('active') : false;
+
+    const wireCols = container.querySelectorAll('.c-wire-col');
+    const lookupKey = {
+        'W': 'C',
+        'L': 'D',
+        'S': 'C',
+        'LS': 'Bat',
+        'R': '#',
+        'RS': 'C',
+        'LR': 'Bat',
+        'LRS': 'Bat',
+        'B': '#',
+        'BS': 'D',
+        'LB': 'P',
+        'LBS': 'P',
+        'RB': '#',
+        'RBS': 'P',
+        'LRB': '#',
+        'LRBS': 'D'
+    };
+
+    wireCols.forEach(col => {
+        // Safe check for checkbox elements in each wire column
+        const getChecked = (selector) => {
+            const el = col.querySelector(selector);
+            return el ? el.checked : false;
+        };
+
+        const light = getChecked('.badge-light') || col.querySelector('.badge-light')?.previousElementSibling?.checked || false;
+        // Alternatively, if using your exact structure where inputs precede labels:
+        const inputs = col.querySelectorAll('input[type="checkbox"]');
+        // If your inputs map directly to [LED, Red, Blue, White, Star]:
+        const lightBox = col.querySelector('#cw-1-l, [id$="-l"]'); // adjust per column if needed
+        
+        // Let's use your robust row-property reading strategy:
+        const lightInput = col.querySelector('.badge-light')?.previousElementSibling;
+        const redInput = col.querySelector('.badge-red')?.previousElementSibling;
+        const blueInput = col.querySelector('.badge-blue')?.previousElementSibling;
+        const whiteInput = col.querySelector('.badge-white')?.previousElementSibling;
+        const starInput = col.querySelector('.badge-star')?.previousElementSibling;
+
+        const isLight = lightInput ? lightInput.checked : false;
+        const isRed = redInput ? redInput.checked : false;
+        const isBlue = blueInput ? blueInput.checked : false;
+        const isWhite = whiteInput ? whiteInput.checked : false;
+        const isStar = starInput ? starInput.checked : false;
+        
+        const resultBox = col.querySelector('.wire-result');
+
+        let key = '';
+        if (isLight) key += 'L';
+        if (isRed) key += 'R';
+        if (isBlue) key += 'B';
+        if (isWhite) key += 'W';
+        if (isStar) key += 'S';
+
+        const instruction = lookupKey[key];
+        let cut = false;
+
+        switch (instruction) {
+            case 'C': cut = true; break;
+            case 'D': cut = false; break;
+            case 'P': cut = parallel; break;
+            case 'Bat': cut = batteries; break;
+            case '#': cut = serialEven; break;
+        }
+
+        resultBox.textContent = cut ? 'CUT' : '--';
+        resultBox.style.color = cut ? '#07ef22' : 'red';
+    });
+}
+
+function resetBoard(container) {
+    // Uncheck wire checkboxes inside this module
+    container.querySelectorAll('input[type="checkbox"]').forEach(box => box.checked = false);
+    
+    // Reset result boxes
+    container.querySelectorAll('.c-wire-result-box').forEach(box => {
+        box.textContent = '--';
+        box.style.color = '#fff';
+    });
+}
+
+
+// =====================================================================
+// WIRE SEQUENCE MODULE LOGIC
+// =====================================================================
 const WIRE_SEQUENCE_RULES = {
     red: {
         1: ['c'], 2: ['b'], 3: ['a'], 4: ['a', 'c'],
@@ -535,8 +484,180 @@ function solveWireSequence(container) {
 }
 
 // ==========================================
-// MEMORY MODULE LOGIC
+// KEYPADS MODULE LOGIC (Corrected Manual Columns)
 // ==========================================
+
+const KEYPAD_COLUMNS = [
+    ['Ϙ', 'Ѧ', 'ƛ', 'Ϟ', 'Ѭ', 'ϗ', 'Ͽ'], // Column 1
+    ['Ӭ', 'Ϙ', 'Ͽ', 'Ҩ', '☆', 'ϗ', '¿'], // Column 2
+    ['©', 'ѽ', 'Ҩ', 'Җ', 'Ԇ', 'ƛ', '☆'], // Column 3
+    ['б', '¶', 'Ѣ', 'Ѭ', 'Җ', '¿', 'ټ'], // Column 4
+    ['Ψ', 'ټ', 'Ѣ', 'Ͼ', '¶', 'Ѯ', '★'], // Column 5
+    ['б', 'Ӭ', '҂', 'æ', 'Ψ', 'Й', 'Ω']  // Column 6
+];
+
+// Collect all unique symbols for the selection grid
+const ALL_KEYPAD_SYMBOLS = [...new Set(KEYPAD_COLUMNS.flat())].sort();
+
+function initKeypads(container) {
+    const symbolGrid = container.querySelector('.keypad-symbol-grid');
+    const generateBtn = container.querySelector('.generateBtn');
+    const resetBtn = container.querySelector('.resetBtn');
+    const resultDisplay = container.querySelector('.keypad-result');
+    const slots = container.querySelectorAll('.kp-slot b');
+
+    let selectedSymbols = [];
+
+    // Render symbol grid buttons
+    symbolGrid.innerHTML = '';
+    ALL_KEYPAD_SYMBOLS.forEach(symbol => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'kp-symbol-btn';
+        btn.textContent = symbol;
+        btn.dataset.symbol = symbol;
+
+        btn.addEventListener('click', () => {
+            const index = selectedSymbols.indexOf(symbol);
+            if (index > -1) {
+                selectedSymbols.splice(index, 1);
+                btn.classList.remove('selected');
+            } else {
+                if (selectedSymbols.length < 4) {
+                    selectedSymbols.push(symbol);
+                    btn.classList.add('selected');
+                }
+            }
+            updateSlots();
+        });
+
+        symbolGrid.appendChild(btn);
+    });
+
+    function updateSlots() {
+        slots.forEach((slot, i) => {
+            slot.textContent = selectedSymbols[i] || '--';
+        });
+    }
+
+    function resetKeypads() {
+        selectedSymbols = [];
+        symbolGrid.querySelectorAll('.kp-symbol-btn').forEach(b => b.classList.remove('selected'));
+        updateSlots();
+        resultDisplay.textContent = '--';
+        resultDisplay.style.color = '#fff';
+    }
+
+    generateBtn.addEventListener('click', () => {
+        if (selectedSymbols.length !== 4) {
+            resultDisplay.textContent = 'SELECT 4 SYMBOLS';
+            resultDisplay.style.color = '#ffaa00';
+            return;
+        }
+
+        // Find the single column that contains all 4 selected symbols
+        let matchingColumn = null;
+        for (let col of KEYPAD_COLUMNS) {
+            if (selectedSymbols.every(sym => col.includes(sym))) {
+                matchingColumn = col;
+                break;
+            }
+        }
+
+        if (!matchingColumn) {
+            resultDisplay.textContent = 'INVALID COMBINATION';
+            resultDisplay.style.color = 'red';
+            return;
+        }
+
+        // Order the selected symbols based on their exact top-to-bottom order in the matching column
+        const orderedSymbols = matchingColumn.filter(sym => selectedSymbols.includes(sym));
+
+        resultDisplay.textContent = orderedSymbols.join(' ');
+        resultDisplay.style.color = '#07ef22';
+    });
+
+    resetBtn.addEventListener('click', resetKeypads);
+}
+
+
+// =====================================================================
+// PASSWORD MODULE LOGIC
+// =====================================================================
+const PASSWORD_WORD_BANK = [
+    "about", "after", "again", "below", "could",
+    "every", "first", "found", "great", "house",
+    "large", "learn", "never", "other", "place",
+    "plant", "point", "right", "small", "sound",
+    "spell", "still", "study", "their", "there",
+    "these", "thing", "think", "three", "water",
+    "where", "which", "world", "would", "write"
+];
+
+function initPassword(container) {
+    const resetBtn = container.querySelector('.resetBtn');
+    const inputs = container.querySelectorAll('.pwd-input');
+    const wordListContainer = container.querySelector('.password-word-list');
+
+    function updatePasswordMatches() {
+        const positionLetters = Array.from(inputs).map(input => 
+            input.value.toLowerCase().replace(/[^a-z]/g, '').split('')
+        );
+
+        // Check if all inputs are completely empty
+        const isEmpty = positionLetters.every(arr => arr.length === 0);
+        if (isEmpty) {
+            wordListContainer.innerHTML = `<span class="password-placeholder-tip">Type possible letters above...</span>`;
+            return;
+        }
+
+        // Filter words matching the entered letters per position
+        const matches = PASSWORD_WORD_BANK.filter(word => {
+            for (let i = 0; i < 5; i++) {
+                const lettersForPos = positionLetters[i];
+                if (lettersForPos.length > 0 && !lettersForPos.includes(word[i])) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        if (matches.length === 0) {
+            wordListContainer.innerHTML = `<span class="password-placeholder-tip" style="color: #ff5555;">No matching words found</span>`;
+        } else {
+            wordListContainer.innerHTML = matches.map(word => `
+                <div class="password-item">
+                    <span class="word">${word}</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Attach live input listener to every box
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            updatePasswordMatches();
+            // Optional: auto-jump focus if typing multiple letters into one box
+            if (input.value.length >= 6 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+    });
+
+    resetBtn.addEventListener('click', () => {
+        inputs.forEach(input => input.value = '');
+        updatePasswordMatches();
+        inputs[0].focus();
+    });
+
+    // Initial render call
+    updatePasswordMatches();
+}
+
+
+// =====================================================================
+// MEMORY MODULE LOGIC
+// =====================================================================
 function initMemory(container) {
     const stageRows = container.querySelectorAll('.memory-stage-row');
     const resetBtn = container.querySelector('.resetBtn');
@@ -729,9 +850,9 @@ function initMemory(container) {
     });
 }
 
-// ==========================================
-// MORSE CODE MODULE LOGIC (Fuzzy & Substring Matching)
-// ==========================================
+// =====================================================================
+// MORSE CODE MODULE LOGIC
+// =====================================================================
 function initMorse(container) {
     const textInput = container.querySelector('#morse-text-input');
     const wordListContainer = container.querySelector('.morse-word-list');
@@ -857,9 +978,9 @@ function initMorse(container) {
     });
 }
 
-// ==========================================
-// WHO'S ON FIRST MODULE LOGIC (Enter Key Workflow)
-// ==========================================
+// =====================================================================
+// WHO'S ON FIRST MODULE LOGIC
+// =====================================================================
 function initWhosOnFirst(container) {
     const displayInput = container.querySelector('#wof-display-input');
     const targetInput = container.querySelector('#wof-target-input');
