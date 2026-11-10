@@ -11,6 +11,17 @@
         <img src="title.png" alt="Title Image">
     </a>
 
+    <!-- Global Bomb Properties Buttons -->
+    <div id="global-bomb-status-bar" class="global-status-bar">
+        <div class="global-toggle-btn-group">
+            <button type="button" class="global-toggle-btn" data-property="parallel">Parallel Port</button>
+            <button type="button" class="global-toggle-btn" data-property="batteries">2+ Batteries</button>
+            <button type="button" class="global-toggle-btn" data-property="serial-odd">Serial # Odd</button>
+            <button type="button" class="global-toggle-btn" data-property="serial-even">Serial # Even</button>
+        </div>
+    </div>
+
+    <!-- Modules Container -->
     <div class="modules-container">
         
         <!-- Slot 1 (Top-Left) -->
@@ -21,6 +32,7 @@
                     <option value="wires">Wires</option>
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
+                    <option value="keypads">Keypads</option>
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
@@ -38,6 +50,7 @@
                     <option value="wires">Wires</option>
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
+                    <option value="keypads">Keypads</option>
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
@@ -61,12 +74,6 @@
                 </div>
 
                 <div class="dynamic-wires-container"></div>
-
-                <div class="cWiresInfo" style="justify-content: center; margin: 15px 0;">
-                    <div class="info-group">
-                        <button type="button" class="serial-btn">Serial # Odd</button>
-                    </div>
-                </div>
 
                 <div class="result-box" style="text-align: center; margin: 10px 0;">
                     <span style="font-weight: bold; color: #fff;">Cut: </span>
@@ -213,18 +220,6 @@
                             <input type="checkbox" id="cw-6-s" class="cWireCheckbox"><label for="cw-6-s" class="cw-badge badge-star">★</label>
                         </div>
                         <div class="c-wire-result-box wire-result">--</div>
-                    </div>
-                </div>
-
-                <div class="cWiresInfo" style="margin-top: 15px;">
-                    <div class="info-group">
-                        <button type="button" class="parallel-toggle-btn">Parallel Port</button>
-                    </div>
-                    <div class="info-group">
-                        <button type="button" class="batteries-toggle-btn">2+ Batteries</button>
-                    </div>
-                    <div class="info-group">
-                        <button type="button" class="serial-btn">Serial # Even</button>
                     </div>
                 </div>
 
@@ -446,6 +441,38 @@
                 <div class="button-group" style="margin-top: 15px;">
                     <button type="button" class="btn generateBtn">Generate Results</button>
                     <button type="button" class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Keypads Template -->
+    <template id="tpl-keypads">
+        <div class="module">
+            <h2>Keypads</h2>
+            <div class="keypads-container">
+                
+                <!-- Selected Symbols Preview -->
+                <div class="keypad-selection-preview">
+                    <span class="kp-slot" data-index="0">1: <b>--</b></span>
+                    <span class="kp-slot" data-index="1">2: <b>--</b></span>
+                    <span class="kp-slot" data-index="2">3: <b>--</b></span>
+                    <span class="kp-slot" data-index="3">4: <b>--</b></span>
+                </div>
+
+                <!-- Symbol Selection Grid -->
+                <div class="keypad-symbol-grid"></div>
+
+                <!-- Result Display -->
+                <div class="result-box" style="text-align: center; margin: 15px 0;">
+                    <span style="font-size: 24px; font-weight: bold; color: #fff;">Press Order: </span>
+                    <span class="keypad-result" style="font-size: 28px; color: #07ef22;">--</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group">
+                    <button class="btn generateBtn">Generate Results</button>
+                    <button class="btn btn-secondary resetBtn">Reset</button>
                 </div>
             </div>
         </div>
