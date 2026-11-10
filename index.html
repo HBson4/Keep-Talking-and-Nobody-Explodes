@@ -32,7 +32,7 @@
                     <option value="wires">Wires</option>
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
-                    <option value="keypads">Keypads</option>
+                    <option value="keypads">Keypads (Symbols)</option>
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
@@ -50,7 +50,7 @@
                     <option value="wires">Wires</option>
                     <option value="cWires">Complicated Wires</option>
                     <option value="wireSequence">Wire Sequence</option>
-                    <option value="keypads">Keypads</option>
+                    <option value="keypads">Keypads (Symbols)</option>
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
@@ -451,27 +451,10 @@
         <div class="module">
             <h2>Keypads</h2>
             <div class="keypads-container">
-                
-                <!-- Selected Symbols Preview -->
-                <div class="keypad-selection-preview">
-                    <span class="kp-slot" data-index="0"><b>--</b></span>
-                    <span class="kp-slot" data-index="1"><b>--</b></span>
-                    <span class="kp-slot" data-index="2"><b>--</b></span>
-                    <span class="kp-slot" data-index="3"><b>--</b></span>
-                </div>
 
-                <!-- Symbol Selection Grid -->
-                <div class="keypad-symbol-grid"></div>
+                <div class="keypad-columns-grid"></div>
 
-                <!-- Result Display -->
-                <div class="result-box" style="text-align: center; margin: 15px 0;">
-                    <span style="font-size: 24px; font-weight: bold; color: #fff;">Press Order: </span>
-                    <span class="keypad-result" style="font-size: 28px; color: #07ef22;">--</span>
-                </div>
-
-                <!-- Action Buttons -->
                 <div class="button-group">
-                    <button class="btn generateBtn">Generate Results</button>
                     <button class="btn btn-secondary resetBtn">Reset</button>
                 </div>
             </div>
