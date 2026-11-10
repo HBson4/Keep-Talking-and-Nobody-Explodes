@@ -62,7 +62,7 @@ function loadModule(containerId, moduleType) {
 }
 
 // ==========================================
-// WIRES MODULE LOGIC
+// WIRES LOGIC
 // ==========================================
 const AVAILABLE_COLORS = ['black', 'blue', 'white', 'red', 'yellow'];
 
@@ -98,142 +98,141 @@ function initSimpleWires(container) {
         resultDisplay.style.color = '#fff';
         // Note: Global status bar buttons are reset globally, not per-module reset.
     });
-}
 
-function renderWireRows(count, parentContainer) {
-    parentContainer.innerHTML = '';
+    function renderWireRows(count, parentContainer) {
+        parentContainer.innerHTML = '';
 
-    for (let i = 1; i <= count; i++) {
-        const row = document.createElement('div');
-        row.className = 'wire-row';
+        for (let i = 1; i <= count; i++) {
+            const row = document.createElement('div');
+            row.className = 'wire-row';
 
-        const title = document.createElement('span');
-        title.className = 'wire-row-title';
-        title.textContent = `Wire ${i}:`;
-        row.appendChild(title);
+            const title = document.createElement('span');
+            title.className = 'wire-row-title';
+            title.textContent = `Wire ${i}:`;
+            row.appendChild(title);
 
-        const buttonGroup = document.createElement('div');
-        buttonGroup.className = 'color-button-group';
+            const buttonGroup = document.createElement('div');
+            buttonGroup.className = 'color-button-group';
 
-        AVAILABLE_COLORS.forEach(color => {
-            const input = document.createElement('input');
-            input.type = 'radio';
-            input.name = `wire_${i}_color`;
-            input.value = color;
-            input.id = `module-wire-${i}-${color}`;
+            AVAILABLE_COLORS.forEach(color => {
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `wire_${i}_color`;
+                input.value = color;
+                input.id = `module-wire-${i}-${color}`;
 
-            const label = document.createElement('label');
-            label.htmlFor = input.id;
-            label.textContent = color.charAt(0).toUpperCase() + color.slice(1);
+                const label = document.createElement('label');
+                label.htmlFor = input.id;
+                label.textContent = color.charAt(0).toUpperCase() + color.slice(1);
 
-            buttonGroup.appendChild(input);
-            buttonGroup.appendChild(label);
+                buttonGroup.appendChild(input);
+                buttonGroup.appendChild(label);
+            });
+
+            row.appendChild(buttonGroup);
+            parentContainer.appendChild(row);
+        }
+    }
+
+    function solveSimpleWires(container) {
+        const resultDisplay = container.querySelector('.wire-cut-result');
+        const wireRows = container.querySelectorAll('.wire-row');
+        
+        // Read the serial odd status globally from the header status bar
+        const globalSerialBtn = document.querySelector('.global-toggle-btn[data-property="serial-odd"]');
+        const serialOdd = globalSerialBtn ? globalSerialBtn.classList.contains('active') : false;
+
+        if (wireRows.length === 0) {
+            resultDisplay.textContent = 'SELECT COUNT';
+            resultDisplay.style.color = '#ffaa00';
+            return;
+        }
+
+        const wires = [];
+        let incomplete = false;
+
+        wireRows.forEach((row) => {
+            const selected = row.querySelector('input[type="radio"]:checked');
+            if (!selected) {
+                incomplete = true;
+            } else {
+                wires.push(selected.value);
+            }
         });
 
-        row.appendChild(buttonGroup);
-        parentContainer.appendChild(row);
+        if (incomplete) {
+            resultDisplay.textContent = 'INCOMPLETE';
+            resultDisplay.style.color = '#ffaa00';
+            return;
+        }
+
+        const count = wires.length;
+        let cutInstruction = '';
+
+        const lastWire = () => wires[wires.length - 1];
+        const countColor = (col) => wires.filter(c => c === col).length;
+        const lastIndexOfColor = (col) => wires.lastIndexOf(col) + 1;
+
+        if (count === 3) {
+            if (!wires.includes('red')) {
+                cutInstruction = 'Second Wire';
+            } else if (lastWire() === 'white') {
+                cutInstruction = 'Last Wire';
+            } else if (countColor('blue') > 1) {
+                cutInstruction = `Last Blue Wire (Wire ${lastIndexOfColor('blue')})`;
+            } else {
+                cutInstruction = 'Last Wire';
+            }
+        } else if (count === 4) {
+            const redCount = countColor('red');
+            const blueCount = countColor('blue');
+            
+            if (redCount > 1 && serialOdd) {
+                cutInstruction = `Last Red Wire (Wire ${lastIndexOfColor('red')})`;
+            } else if (lastWire() === 'yellow' && redCount === 0) {
+                cutInstruction = 'First Wire';
+            } else if (blueCount === 1) {
+                cutInstruction = 'First Wire';
+            } else if (countColor('yellow') > 1) {
+                cutInstruction = 'Last Wire';
+            } else {
+                cutInstruction = 'Second Wire';
+            }
+        } else if (count === 5) {
+            const redCount = countColor('red');
+            
+            if (lastWire() === 'black' && serialOdd) {
+                cutInstruction = 'Fourth Wire';
+            } else if (redCount === 1 && countColor('yellow') > 1) {
+                cutInstruction = 'First Wire';
+            } else if (countColor('black') === 0) {
+                cutInstruction = 'Second Wire';
+            } else {
+                cutInstruction = 'First Wire';
+            }
+        } else if (count === 6) {
+            const yellowCount = countColor('yellow');
+            const whiteCount = countColor('white');
+            const redCount = countColor('red');
+
+            if (yellowCount === 0 && serialOdd) {
+                cutInstruction = 'Third Wire';
+            } else if (yellowCount === 1 && whiteCount > 1) {
+                cutInstruction = 'Fourth Wire';
+            } else if (redCount === 0) {
+                cutInstruction = 'Last Wire';
+            } else {
+                cutInstruction = 'Fourth Wire';
+            }
+        }
+
+        resultDisplay.textContent = cutInstruction;
+        resultDisplay.style.color = '#07ef22';
     }
 }
-
-function solveSimpleWires(container) {
-    const resultDisplay = container.querySelector('.wire-cut-result');
-    const wireRows = container.querySelectorAll('.wire-row');
-    
-    // Read the serial odd status globally from the header status bar
-    const globalSerialBtn = document.querySelector('.global-toggle-btn[data-property="serial-odd"]');
-    const serialOdd = globalSerialBtn ? globalSerialBtn.classList.contains('active') : false;
-
-    if (wireRows.length === 0) {
-        resultDisplay.textContent = 'SELECT COUNT';
-        resultDisplay.style.color = '#ffaa00';
-        return;
-    }
-
-    const wires = [];
-    let incomplete = false;
-
-    wireRows.forEach((row) => {
-        const selected = row.querySelector('input[type="radio"]:checked');
-        if (!selected) {
-            incomplete = true;
-        } else {
-            wires.push(selected.value);
-        }
-    });
-
-    if (incomplete) {
-        resultDisplay.textContent = 'INCOMPLETE';
-        resultDisplay.style.color = '#ffaa00';
-        return;
-    }
-
-    const count = wires.length;
-    let cutInstruction = '';
-
-    const lastWire = () => wires[wires.length - 1];
-    const countColor = (col) => wires.filter(c => c === col).length;
-    const lastIndexOfColor = (col) => wires.lastIndexOf(col) + 1;
-
-    if (count === 3) {
-        if (!wires.includes('red')) {
-            cutInstruction = 'Second Wire';
-        } else if (lastWire() === 'white') {
-            cutInstruction = 'Last Wire';
-        } else if (countColor('blue') > 1) {
-            cutInstruction = `Last Blue Wire (Wire ${lastIndexOfColor('blue')})`;
-        } else {
-            cutInstruction = 'Last Wire';
-        }
-    } else if (count === 4) {
-        const redCount = countColor('red');
-        const blueCount = countColor('blue');
-        
-        if (redCount > 1 && serialOdd) {
-            cutInstruction = `Last Red Wire (Wire ${lastIndexOfColor('red')})`;
-        } else if (lastWire() === 'yellow' && redCount === 0) {
-            cutInstruction = 'First Wire';
-        } else if (blueCount === 1) {
-            cutInstruction = 'First Wire';
-        } else if (countColor('yellow') > 1) {
-            cutInstruction = 'Last Wire';
-        } else {
-            cutInstruction = 'Second Wire';
-        }
-    } else if (count === 5) {
-        const redCount = countColor('red');
-        
-        if (lastWire() === 'black' && serialOdd) {
-            cutInstruction = 'Fourth Wire';
-        } else if (redCount === 1 && countColor('yellow') > 1) {
-            cutInstruction = 'First Wire';
-        } else if (countColor('black') === 0) {
-            cutInstruction = 'Second Wire';
-        } else {
-            cutInstruction = 'First Wire';
-        }
-    } else if (count === 6) {
-        const yellowCount = countColor('yellow');
-        const whiteCount = countColor('white');
-        const redCount = countColor('red');
-
-        if (yellowCount === 0 && serialOdd) {
-            cutInstruction = 'Third Wire';
-        } else if (yellowCount === 1 && whiteCount > 1) {
-            cutInstruction = 'Fourth Wire';
-        } else if (redCount === 0) {
-            cutInstruction = 'Last Wire';
-        } else {
-            cutInstruction = 'Fourth Wire';
-        }
-    }
-
-    resultDisplay.textContent = cutInstruction;
-    resultDisplay.style.color = '#07ef22';
-}
-
 
 // ==========================================
-// COMPLICATED WIRES MODULE LOGIC (Global Status Bar)
+// COMPLICATED WIRES LOGIC
 // ==========================================
 function initComplicatedWires(container) {
     const generateBtn = container.querySelector('.generateBtn');
@@ -241,9 +240,8 @@ function initComplicatedWires(container) {
 
     generateBtn.addEventListener('click', () => solveWires(container));
     resetBtn.addEventListener('click', () => resetBoard(container));
-}
 
-function solveWires(container) {
+    function solveWires(container) {
     // Read state directly from the global status bar at the top of the page
     const parallelBtn = document.querySelector('.global-toggle-btn[data-property="parallel"]');
     const parallel = parallelBtn ? parallelBtn.classList.contains('active') : false;
@@ -325,20 +323,20 @@ function solveWires(container) {
     });
 }
 
-function resetBoard(container) {
-    // Uncheck wire checkboxes inside this module
-    container.querySelectorAll('input[type="checkbox"]').forEach(box => box.checked = false);
-    
-    // Reset result boxes
-    container.querySelectorAll('.c-wire-result-box').forEach(box => {
-        box.textContent = '--';
-        box.style.color = '#fff';
-    });
+    function resetBoard(container) {
+        // Uncheck wire checkboxes inside this module
+        container.querySelectorAll('input[type="checkbox"]').forEach(box => box.checked = false);
+        
+        // Reset result boxes
+        container.querySelectorAll('.c-wire-result-box').forEach(box => {
+            box.textContent = '--';
+            box.style.color = '#fff';
+        });
+    }
 }
 
-
 // =====================================================================
-// WIRE SEQUENCE MODULE LOGIC
+// WIRE SEQUENCE LOGIC
 // =====================================================================
 const WIRE_SEQUENCE_RULES = {
     red: {
@@ -437,9 +435,8 @@ function initWireSequence(container) {
     }
 
     updatePanelDisplay();
-}
 
-function solveWireSequence(container) {
+    function solveWireSequence(container) {
     let redCount = 0;
     let blueCount = 0;
     let blackCount = 0;
@@ -480,12 +477,13 @@ function solveWireSequence(container) {
 
         resultSpan.textContent = shouldCut ? 'CUT' : '--';
         resultSpan.style.color = shouldCut ? '#07ef22' : 'red';
-    });
+        });
+    }
 }
 
-// ==========================================
-// KEYPADS MODULE LOGIC (Corrected Manual Columns)
-// ==========================================
+// =====================================================================
+// KEYPADS LOGIC
+// =====================================================================
 
 const KEYPAD_COLUMNS = [
     ['Ϙ', 'Ѧ', 'ƛ', 'Ϟ', 'Ѭ', 'ϗ', 'Ͽ'], // Column 1
@@ -496,93 +494,117 @@ const KEYPAD_COLUMNS = [
     ['б', 'Ӭ', '҂', 'æ', 'Ψ', 'Й', 'Ω']  // Column 6
 ];
 
-// Collect all unique symbols for the selection grid
-const ALL_KEYPAD_SYMBOLS = [...new Set(KEYPAD_COLUMNS.flat())].sort();
+const SANS_SERIF_SYMBOLS = ['Ϙ', 'Ѧ', 'Ѭ', 'Ͽ', 'Ͼ', '©', '¶', '҂', 'ټ'];
 
 function initKeypads(container) {
-    const symbolGrid = container.querySelector('.keypad-symbol-grid');
-    const generateBtn = container.querySelector('.generateBtn');
+    const columnsGrid = container.querySelector('.keypad-columns-grid');
     const resetBtn = container.querySelector('.resetBtn');
     const resultDisplay = container.querySelector('.keypad-result');
     const slots = container.querySelectorAll('.kp-slot b');
 
     let selectedSymbols = [];
 
-    // Render symbol grid buttons
-    symbolGrid.innerHTML = '';
-    ALL_KEYPAD_SYMBOLS.forEach(symbol => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'kp-symbol-btn';
-        btn.textContent = symbol;
-        btn.dataset.symbol = symbol;
+    // Render the 6 columns and their cells
+    columnsGrid.innerHTML = '';
+    const columnElements = [];
 
-        btn.addEventListener('click', () => {
-            const index = selectedSymbols.indexOf(symbol);
-            if (index > -1) {
-                selectedSymbols.splice(index, 1);
-                btn.classList.remove('selected');
-            } else {
-                if (selectedSymbols.length < 4) {
-                    selectedSymbols.push(symbol);
-                    btn.classList.add('selected');
-                }
-            }
-            updateSlots();
+    KEYPAD_COLUMNS.forEach((colData, colIndex) => {
+    const colDiv = document.createElement('div');
+    colDiv.className = 'kp-column';
+    colDiv.dataset.colIndex = colIndex;
+
+    const cellElements = [];
+    colData.forEach(symbol => {
+        const cell = document.createElement('div');
+        
+        // Base class + dynamic font class assignment
+        cell.className = 'kp-cell';
+        if (SANS_SERIF_SYMBOLS.includes(symbol)) {
+            cell.classList.add('font-sans');
+        } else {
+            cell.classList.add('font-serif');
+        }
+
+        cell.textContent = symbol;
+        cell.dataset.symbol = symbol;
+
+        cell.addEventListener('click', () => {
+            handleSymbolClick(symbol);
         });
 
-        symbolGrid.appendChild(btn);
+        colDiv.appendChild(cell);
+        cellElements.push({ symbol, cell });
     });
 
-    function updateSlots() {
+    columnsGrid.appendChild(colDiv);
+    columnElements.push({ colDiv, colData, cellElements });
+});
+
+    function handleSymbolClick(symbol) {
+        const index = selectedSymbols.indexOf(symbol);
+        
+        if (index > -1) {
+            // Deselect if already chosen
+            selectedSymbols.splice(index, 1);
+        } else {
+            // Select if under limit of 4
+            if (selectedSymbols.length < 4) {
+                selectedSymbols.push(symbol);
+            }
+        }
+
+        updateUI();
+    }
+
+    function updateUI() {
+        // 1. Update preview slots
         slots.forEach((slot, i) => {
-            slot.textContent = selectedSymbols[i] || '--';
+            slot.textContent = selectedSymbols[i] || '';
         });
+
+        // 2. Highlight all occurrences of selected symbols across all cells
+        columnElements.forEach(col => {
+            col.cellElements.forEach(item => {
+                if (selectedSymbols.includes(item.symbol)) {
+                    item.cell.classList.add('selected');
+                } else {
+                    item.cell.classList.remove('selected');
+                }
+            });
+        });
+
+        // 3. If 4 symbols are selected, grey out incorrect columns and solve automatically
+        if (selectedSymbols.length === 4) {
+            let matchingColData = null;
+
+            columnElements.forEach(col => {
+                const hasAll = selectedSymbols.every(sym => col.colData.includes(sym));
+                if (hasAll) {
+                    col.colDiv.classList.remove('greyed-out');
+                    matchingColData = col.colData;
+                } else {
+                    col.colDiv.classList.add('greyed-out');
+                }
+            });
+
+        } else {
+            // Reset greyed-out state and result when fewer than 4 symbols are picked
+            columnElements.forEach(col => col.colDiv.classList.remove('greyed-out'));
+            resultDisplay.textContent = '--';
+            resultDisplay.style.color = '#fff';
+        }
     }
 
     function resetKeypads() {
         selectedSymbols = [];
-        symbolGrid.querySelectorAll('.kp-symbol-btn').forEach(b => b.classList.remove('selected'));
-        updateSlots();
-        resultDisplay.textContent = '--';
-        resultDisplay.style.color = '#fff';
+        updateUI();
     }
-
-    generateBtn.addEventListener('click', () => {
-        if (selectedSymbols.length !== 4) {
-            resultDisplay.textContent = 'SELECT 4 SYMBOLS';
-            resultDisplay.style.color = '#ffaa00';
-            return;
-        }
-
-        // Find the single column that contains all 4 selected symbols
-        let matchingColumn = null;
-        for (let col of KEYPAD_COLUMNS) {
-            if (selectedSymbols.every(sym => col.includes(sym))) {
-                matchingColumn = col;
-                break;
-            }
-        }
-
-        if (!matchingColumn) {
-            resultDisplay.textContent = 'INVALID COMBINATION';
-            resultDisplay.style.color = 'red';
-            return;
-        }
-
-        // Order the selected symbols based on their exact top-to-bottom order in the matching column
-        const orderedSymbols = matchingColumn.filter(sym => selectedSymbols.includes(sym));
-
-        resultDisplay.textContent = orderedSymbols.join(' ');
-        resultDisplay.style.color = '#07ef22';
-    });
 
     resetBtn.addEventListener('click', resetKeypads);
 }
 
-
 // =====================================================================
-// PASSWORD MODULE LOGIC
+// PASSWORD LOGIC
 // =====================================================================
 const PASSWORD_WORD_BANK = [
     "about", "after", "again", "below", "could",
@@ -654,9 +676,8 @@ function initPassword(container) {
     updatePasswordMatches();
 }
 
-
 // =====================================================================
-// MEMORY MODULE LOGIC
+// MEMORY LOGIC
 // =====================================================================
 function initMemory(container) {
     const stageRows = container.querySelectorAll('.memory-stage-row');
@@ -851,7 +872,7 @@ function initMemory(container) {
 }
 
 // =====================================================================
-// MORSE CODE MODULE LOGIC
+// MORSE CODE LOGIC
 // =====================================================================
 function initMorse(container) {
     const textInput = container.querySelector('#morse-text-input');
@@ -979,7 +1000,7 @@ function initMorse(container) {
 }
 
 // =====================================================================
-// WHO'S ON FIRST MODULE LOGIC
+// WHO'S ON FIRST LOGIC
 // =====================================================================
 function initWhosOnFirst(container) {
     const displayInput = container.querySelector('#wof-display-input');
