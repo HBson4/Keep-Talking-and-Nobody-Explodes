@@ -11,6 +11,52 @@ body {
     margin: 0 auto 20px auto;
 }
 
+/* --------------- Global Status Bar Styles ------------------------------ */
+
+.global-status-bar {
+    max-width: 40%;
+    margin: 0 auto;
+    gap: 10px;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #444;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+
+.global-toggle-btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.global-toggle-btn {
+    margin: 0 auto;
+    background: #2b2b2b;
+    color: #fff;
+    border: 2px solid #444;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.global-toggle-btn:hover {
+    background: #3b3b3b;
+    border-color: #bc4325;
+    transform: scale(1.05);
+}
+
+.global-toggle-btn.active {
+    background-color: #bc4325;
+    color: #ffffff;
+    border-color: #fff;
+}
+
+/* --------------- Modules Container Styles ------------------------------ */
+
 .modules-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -54,20 +100,20 @@ body {
 
 .module-select:hover {
     border-color: #d94b28;
+    background-color: #333;
 }
 
 .module-content {
     width: 100%;
 }
 
-/* Responsive adjustment: Stack into a single column on smaller screens */
 @media (max-width: 1000px) {
     .modules-container {
         grid-template-columns: 1fr;
     }
 }
 
-/* --------------- General Module Styles --------------- */
+/* --------------- General Module Styles ------------------------------ */
 
 h2 {
     text-align: center;
@@ -134,7 +180,7 @@ input[type="checkbox"] {
     font-size: 16px;
 }
 
-/* --------------- Button styles --------------- */
+/* --------------- Button styles ------------------------------ */
 
 .button-group {
     margin-top: 15px;
@@ -173,8 +219,6 @@ input[type="checkbox"] {
         flex-direction: column;
     }
 }
-
-/* --------------- Toggle button styles --------------- */
 
 /*  Serial Toggle Button Group Styles  */
 .serial-btn-group {
@@ -263,7 +307,7 @@ input[type="checkbox"] {
 }
 
 
-/* --------------- Complicated Wires Styles --------------- */
+/* --------------- Complicated Wires Styles ------------------------------ */
 
 .c-wires-container {
     display: flex;
@@ -352,7 +396,7 @@ input[type="checkbox"] {
     color: #ffffff;
 }
 
-/* --------------- Password Module Styles --------------- */
+/* --------------- Password Module Styles ------------------------------ */
 
 .password-container {
     display: flex;
@@ -470,7 +514,7 @@ input[type="checkbox"] {
 }
 
 
-/* --------------- Wires Module Styles --------------- */
+/* --------------- Wires Module Styles ------------------------------ */
 
 .wires-container {
     display: flex;
@@ -514,7 +558,7 @@ input[type="checkbox"] {
     border-color: #07ef22;
 }
 
-/* --------------- Wire Count Button Styles --------------- */
+/*  Wire Count Button Styles  */
 .wire-count-btn {
     padding: 6px 14px;
     border-radius: 3px;
@@ -618,7 +662,7 @@ input[type="checkbox"] {
 }
 
 
-/* --------------- Wire Sequence Module Styles (Stepper) --------------- */
+/* --------------- Wire Sequence Module Styles ------------------------------ */
 
 .wire-seq-container {
     display: flex;
@@ -760,7 +804,7 @@ input[type="checkbox"] {
     color: #ffffff;
 }
 
-/* --------------- Memory Module Styles --------------- */
+/* --------------- Memory Module Styles ------------------------------ */
 .memory-container {
     display: flex;
     flex-direction: column;
@@ -873,7 +917,6 @@ input[type="checkbox"] {
     border-color: #fff;
 }
 
-/* --------------- Disabled Button Styling --------------- */
 .mem-pos-btn:disabled, .mem-lbl-btn:disabled {
     background-color: #1a1a1a !important;
     color: #555 !important;
@@ -882,7 +925,7 @@ input[type="checkbox"] {
     opacity: 0.5;
 }
 
-/* --------------- Morse Code Text Input Styles --------------- */
+/* --------------- Morse Code Styles ------------------------------ */
 .morse-container {
     display: flex;
     flex-direction: column;
@@ -932,7 +975,6 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    /* No max-height or overflow so everything displays at once */
     max-height: 25vh;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -969,7 +1011,7 @@ input[type="checkbox"] {
     padding: 10px 0;
 }
 
-/* --------------- Who's on First Styles --------------- */
+/* --------------- Who's on First Styles ------------------------------ */
 .wof-container {
     display: flex;
     flex-direction: column;
@@ -1046,4 +1088,74 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+/* --------------- Keypads Module Styles ------------------------------ */
+
+.keypads-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.keypad-selection-preview {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+.kp-slot {
+    font-size: 22px;
+    color: #ccc;
+    background: #222;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid #555;
+}
+
+.kp-slot b {
+    color: #fff;
+    margin-left: 4px;
+    font-size: 22px;
+}
+
+.keypad-symbol-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #444;
+}
+
+.kp-symbol-btn {
+    background-color: #222;
+    color: #fff;
+    border: 2px solid #555;
+    border-radius: 4px;
+    font-size: 22px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kp-symbol-btn:hover {
+    background-color: #333;
+    border-color: #bc4325;
+    transform: scale(1.05);
+}
+
+.kp-symbol-btn.selected {
+    background-color: #bc4325;
+    border-color: #fff;
+    color: #fff;
 }
