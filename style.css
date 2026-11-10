@@ -1117,12 +1117,6 @@ input[type="checkbox"] {
     border: 1px solid #555;
 }
 
-.kp-slot b {
-    color: #fff;
-    margin-left: 4px;
-    font-size: 22px;
-}
-
 .keypad-symbol-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
