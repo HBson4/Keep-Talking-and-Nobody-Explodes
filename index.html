@@ -8,7 +8,7 @@
 </head>
 <body>
     <a class="title" href="https://www.bombmanual.com/web/index.html" target="_blank">
-        <img src="title.png" alt="Title Image">
+        <img src="images/title.png" alt="Title Image">
     </a>
 
     <!-- Global Bomb Properties Buttons -->
@@ -24,7 +24,7 @@
     <!-- Modules Container -->
     <div class="modules-container">
         
-        <!-- Slot 1 (Top-Left) -->
+        <!-- Slot 1 (Left) -->
         <div class="module-box">
             <div class="module-selector-wrap">
                 <select id="select-1" class="module-select">
@@ -36,13 +36,13 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
-                    <option value="whos-on-first">Who's on First</option>
+                    <option value="whosOnFirst">Who's on First</option>
                 </select>
             </div>
             <div id="content-1" class="module-content"></div>
         </div>
 
-        <!-- Slot 2 (Top-Right) -->
+        <!-- Slot 2 (Right) -->
         <div class="module-box">
             <div class="module-selector-wrap">
                 <select id="select-2" class="module-select">
@@ -54,7 +54,7 @@
                     <option value="password">Password</option>
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
-                    <option value="whos-on-first">Who's on First</option>
+                    <option value="whosOnFirst">Who's on First</option>
                 </select>
             </div>
             <div id="content-2" class="module-content"></div>
@@ -454,6 +454,7 @@
 
                 <div class="keypad-columns-grid"></div>
 
+                <div class="keypad-result"></div>
                 <div class="button-group">
                     <button class="btn btn-secondary resetBtn">Reset</button>
                 </div>
@@ -702,7 +703,7 @@
     </template>
 
     <!-- Who's on First Template -->
-    <template id="tpl-whos-on-first">
+    <template id="tpl-whosOnFirst">
         <div class="module">
             <h2>Who's on First</h2>
             <div class="wof-container">
