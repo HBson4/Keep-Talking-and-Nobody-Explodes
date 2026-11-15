@@ -33,6 +33,28 @@ function loadModule(containerId, moduleType) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing module content
 
+    const image = document.createElement('img');
+    image.src = `images/${moduleType}.jpg`;
+    image.alt = moduleType + ' Image';
+    image.classList.add('module-image');
+
+    // Click-to-enlarge functionality
+    image.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExpanded = image.classList.toggle('expanded');
+        document.body.classList.toggle('lightbox-active', isExpanded);
+    });
+
+    // Close when clicking anywhere else on the screen while expanded
+    document.addEventListener('click', () => {
+        if (image.classList.contains('expanded')) {
+            image.classList.remove('expanded');
+            document.body.classList.remove('lightbox-active');
+        }
+    });
+
+    container.appendChild(image);
+
     if (!moduleType) return; // Reset/empty option selected
 
     const template = document.getElementById(`tpl-${moduleType}`);
@@ -55,7 +77,7 @@ function loadModule(containerId, moduleType) {
             initMemory(container);
         } else if (moduleType === 'morse') {
             initMorse(container);
-        } else if (moduleType === 'whos-on-first') {
+        } else if (moduleType === 'whosOnFirst') {
             initWhosOnFirst(container);
         }
     }
@@ -573,7 +595,7 @@ function initKeypads(container) {
             });
         });
 
-        // 3. If 4 symbols are selected, grey out incorrect columns and solve automatically
+        // 3. If 4 symbols are selected, grey out incorrect columns
         if (selectedSymbols.length === 4) {
             let matchingColData = null;
 
@@ -585,13 +607,20 @@ function initKeypads(container) {
                 } else {
                     col.colDiv.classList.add('greyed-out');
                 }
+                // display result if there is no matching column
+                if (!matchingColData) {
+                    resultDisplay.textContent = 'INVALID';
+                    resultDisplay.style.color = '#ffaa00';;
+                } else {
+                    resultDisplay.textContent = '';
+                }
+
             });
 
         } else {
             // Reset greyed-out state and result when fewer than 4 symbols are picked
             columnElements.forEach(col => col.colDiv.classList.remove('greyed-out'));
-            resultDisplay.textContent = '--';
-            resultDisplay.style.color = '#fff';
+            resultDisplay.textContent = '';
         }
     }
 
