@@ -37,6 +37,7 @@
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
                     <option value="whosOnFirst">Who's on First</option>
+                    <option value="maze">Maze</option>
                 </select>
             </div>
             <div id="content-1" class="module-content"></div>
@@ -55,6 +56,7 @@
                     <option value="memory">Memory</option>
                     <option value="morse">Morse Code</option>
                     <option value="whosOnFirst">Who's on First</option>
+                    <option value="maze">Maze</option>
                 </select>
             </div>
             <div id="content-2" class="module-content"></div>
@@ -712,14 +714,15 @@
                 <div class="wof-step" id="wof-step-1">
                     <div class="wof-section">
                         <input type="text" id="wof-display-input" class="wof-text-input" placeholder="Display word..." autocomplete="off" spellcheck="false" />
+                        <p class="wof-instruction-title" id="wof-position-prompt"></p>
                     </div>
                 </div>
 
                 <!-- Step 2: Button Word Input (Hidden Initially) -->
                 <div class="wof-step" id="wof-step-2" style="display: none;">
-                    <p class="wof-instruction-title" id="wof-position-prompt">[Position]</p>
                     <div class="wof-section" style="margin-top: 6px;">
                         <input type="text" id="wof-target-input" class="wof-text-input" placeholder="Button word..." autocomplete="off" spellcheck="false" />
+                        <p class="wof-instruction-title" id="wof-result-prompt"></p>
                     </div>
                 </div>
 
@@ -732,6 +735,39 @@
 
                 <div class="button-group" style="margin-top: 15px;">
                     <button type="button" class="btn btn-secondary resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Maze Template -->
+    <template id="tpl-maze">
+        <div class="module">
+            <h2>Maze</h2>
+            <div class="maze-container">
+                
+                <!-- Mode Selector / Status Prompt -->
+                <div class="maze-controls">
+                    <button type="button" class="maze-mode-btn active" data-mode="indicator">1. Green Circle</button>
+                    <button type="button" class="maze-mode-btn" data-mode="start">2. White Light (Start)</button>
+                    <button type="button" class="maze-mode-btn" data-mode="goal">3. Red Triangle (Goal)</button>
+                </div>
+
+                <!-- Side-by-Side Wrapper for Grid + Vertical Path -->
+                <div class="maze-body">
+                    <!-- 6x6 Maze Grid -->
+                    <div class="maze-grid"></div>
+
+                    <!-- Vertical Directional Output -->
+                    <div class="maze-path-panel">
+                        <span class="maze-path-title">Path:</span>
+                        <div class="maze-result"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group" style="margin-top: 15px;">
+                    <button class="btn btn-secondary resetBtn">Reset</button>
                 </div>
             </div>
         </div>
