@@ -1118,6 +1118,8 @@ function initWhosOnFirst(container) {
             if (!displayPositionMap.hasOwnProperty(displayVal)) {
                 positionPrompt.textContent = `Unknown display word "${displayVal}"!`;
                 positionPrompt.style.color = 'red';
+                step2Container.style.display = 'none';
+                resultBox.style.display = 'none';
                 return;
             } 
 
