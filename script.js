@@ -33,29 +33,31 @@ function loadModule(containerId, moduleType) {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear existing module content
 
-    const image = document.createElement('img');
-    image.src = `images/${moduleType}.jpg`;
-    image.alt = moduleType + ' Image';
-    image.classList.add('module-image');
+    if (!moduleType) {
+        return;
+    } else {
+        const image = document.createElement('img');
+        image.src = `images/${moduleType}.jpg`;
+        image.alt = moduleType + ' Image';
+        image.classList.add('module-image');
 
-    // Click-to-enlarge functionality
-    image.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isExpanded = image.classList.toggle('expanded');
-        document.body.classList.toggle('lightbox-active', isExpanded);
-    });
+        // Click-to-enlarge functionality
+        image.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = image.classList.toggle('expanded');
+            document.body.classList.toggle('lightbox-active', isExpanded);
+        });
 
-    // Close when clicking anywhere else on the screen while expanded
-    document.addEventListener('click', () => {
-        if (image.classList.contains('expanded')) {
-            image.classList.remove('expanded');
-            document.body.classList.remove('lightbox-active');
-        }
-    });
+        // Close when clicking anywhere else on the screen while expanded
+        document.addEventListener('click', () => {
+            if (image.classList.contains('expanded')) {
+                image.classList.remove('expanded');
+                document.body.classList.remove('lightbox-active');
+            }
+        });
 
-    container.appendChild(image);
-
-    if (!moduleType) return; // Reset/empty option selected
+        container.appendChild(image);
+    }
 
     const template = document.getElementById(`tpl-${moduleType}`);
     if (template) {
@@ -79,6 +81,8 @@ function loadModule(containerId, moduleType) {
             initMorse(container);
         } else if (moduleType === 'whosOnFirst') {
             initWhosOnFirst(container);
+        } else if (moduleType === 'maze') {
+            initMaze(container);
         }
     }
 }
@@ -1036,6 +1040,7 @@ function initWhosOnFirst(container) {
     const targetInput = container.querySelector('#wof-target-input');
     const step2Container = container.querySelector('#wof-step-2');
     const positionPrompt = container.querySelector('#wof-position-prompt');
+    const resultPrompt = container.querySelector('#wof-result-prompt');
     const resultBox = container.querySelector('#wof-result-box');
     const wordListContainer = container.querySelector('#wof-word-list');
     const resetBtn = container.querySelector('.resetBtn');
@@ -1111,16 +1116,17 @@ function initWhosOnFirst(container) {
             const displayVal = displayInput.value.trim().toUpperCase();
             
             if (!displayPositionMap.hasOwnProperty(displayVal)) {
-                alert(`Unknown display word "${displayVal}". Check spelling!`);
+                positionPrompt.textContent = `Unknown display word "${displayVal}"!`;
+                positionPrompt.style.color = 'red';
                 return;
-            }
+            } 
 
             resolvedPosition = displayPositionMap[displayVal];
             
             positionPrompt.textContent = `${resolvedPosition.name} button`;
+            positionPrompt.style.color = '#07ef22';
             step2Container.style.display = 'flex';
             targetInput.focus();
-            displayInput.disabled = true;
         }
     });
 
@@ -1131,7 +1137,9 @@ function initWhosOnFirst(container) {
             const list = wordLists[buttonWord];
 
             if (!list) {
-                alert(`Unknown button word "${buttonWord}". Check spelling!`);
+                resultPrompt.textContent = `Unknown button word "${buttonWord}"!`;
+                resultPrompt.style.color = 'red';
+                resultBox.style.display = 'none';
                 return;
             }
 
@@ -1139,8 +1147,8 @@ function initWhosOnFirst(container) {
                 <div class="wof-word-item">${word}</div>
             `).join('');
 
+            resultPrompt.textContent = '';
             resultBox.style.display = 'block';
-            targetInput.disabled = true;
         }
     });
 
@@ -1149,10 +1157,322 @@ function initWhosOnFirst(container) {
         targetInput.value = '';
         displayInput.disabled = false;
         targetInput.disabled = false;
+        resultPrompt.textContent = '';
+        positionPrompt.textContent = '';
         step2Container.style.display = 'none';
         resultBox.style.display = 'none';
         displayInput.focus();
     });
 
     displayInput.focus();
+}
+
+// ==========================================
+// MAZE LOGIC
+// ==========================================
+
+// Wall bitmask: 1 = Top, 2 = Right, 4 = Bottom, 8 = Left
+// Indicators are stored as [x, y] where (1,1) is bottom-left and (6,6) is top-right
+const MAZE_DATA = [
+    {
+        indicators: [[1, 5], [6, 4]],
+        walls: [
+            [0, 4, 2, 8, 4, 4],
+            [2, 9, 6, 12, 5, 1],
+            [2, 12, 3, 9, 5, 0],
+            [2, 13, 4, 6, 13, 0],
+            [0, 5, 3, 9, 7, 8],
+            [0, 3, 8, 2, 9, 0]
+        ]
+    },
+    {
+        indicators: [[5, 5], [2, 3]],
+        walls: [
+            [4, 0, 6, 8, 0, 4],
+            [1, 6, 9, 6, 12, 1],
+            [2, 9, 6, 9, 5, 0],
+            [0, 6, 9, 6, 11, 8],
+            [2, 11, 10, 9, 6, 8],
+            [2, 8, 2, 8, 1, 0]
+        ]
+    },
+    {
+        indicators: [[4, 3], [6, 3]],
+        walls: [
+            [0, 4, 2, 10, 8, 0],
+            [6, 11, 10, 12, 6, 8],
+            [1, 2, 10, 9, 3, 8],
+            [2, 10, 10, 10, 10, 8],
+            [2, 12, 6, 10, 10, 8],
+            [0, 1, 1, 2, 8, 0]
+        ]
+    },
+    {
+        indicators: [[1, 6], [1, 3]],
+        walls: [
+            [0, 2, 12, 4, 4, 0],
+            [2, 10, 9, 5, 5, 0],
+            [2, 12, 6, 9, 7, 8],
+            [2, 13, 5, 4, 5, 0],
+            [0, 5, 5, 5, 3, 8],
+            [0, 1, 3, 9, 2, 8]
+        ]
+    },
+    { 
+        indicators: [[5, 4], [4, 1]],
+        walls: [
+            [4, 4, 4, 4, 0, 0],
+            [1, 5, 5, 1, 6, 12],
+            [0, 3, 13, 6, 9, 1],
+            [2, 12, 5, 3, 14, 8],
+            [2, 9, 5, 4, 7, 8],
+            [2, 8, 1, 1, 1, 0]
+        ]
+    },
+    {
+        indicators: [[5, 6], [3, 2]],
+        walls: [
+            [2, 8, 2, 12, 0, 0],
+            [2, 10, 10, 9, 6, 8],
+            [0, 6, 14, 10, 9, 4],
+            [4, 3, 9, 2, 10, 9],
+            [1, 6, 14, 10, 12, 0],
+            [0, 1, 1, 2, 9, 0]
+        ]
+    },
+    {
+        indicators: [[2, 6], [2, 1]],
+        walls: [
+            [0, 4, 4, 2, 8, 0],
+            [2, 9, 7, 12, 6, 8],
+            [4, 6, 9, 7, 9, 4],
+            [1, 3, 8, 5, 6, 9],
+            [2, 14, 12, 5, 3, 8],
+            [0, 1, 1, 1, 0, 0]
+        ]
+    },
+    {
+        indicators: [[4, 6], [3, 3]],
+        walls: [
+            [2, 8, 4, 2, 8, 0],
+            [0, 4, 7, 12, 6, 8],
+            [2, 9, 5, 5, 3, 8],
+            [2, 12, 3, 13, 4, 4],
+            [2, 11, 12, 5, 5, 5],
+            [0, 0, 1, 1, 1, 1]
+        ]
+    },
+    {
+        indicators: [[3, 5], [1, 2]],
+        walls: [
+            [2, 8, 4, 4, 0, 0],
+            [2, 10, 9, 7, 10, 8],
+            [0, 4, 6, 9, 6, 8],
+            [2, 11, 9, 6, 13, 0],
+            [2, 10, 10, 9, 3, 12],
+            [0, 2, 8, 2, 8, 1]
+        ]
+    }
+];
+
+function initMaze(container) {
+    const gridEl = container.querySelector('.maze-grid');
+    const modeBtns = container.querySelectorAll('.maze-mode-btn');
+    const resultDisplay = container.querySelector('.maze-result');
+    const resetBtn = container.querySelector('.resetBtn');
+
+    let currentMode = 'indicator'; // 'indicator' | 'start' | 'goal'
+    let activeMaze = null;
+    let startPos = null; // [x, y]
+    let goalPos = null;  // [x, y]
+
+    // Build 6x6 DOM cells
+    const cells = [];
+    gridEl.innerHTML = '';
+    for (let r = 0; r < 6; r++) {
+        cells[r] = [];
+        for (let c = 0; c < 6; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'maze-cell';
+            
+            // Convert DOM cell to (x, y) bottom-left origin for reference
+            const x = c + 1;
+            const y = 6 - r;
+            cell.dataset.x = x;
+            cell.dataset.y = y;
+
+            cell.addEventListener('click', () => handleCellClick(x, y));
+            gridEl.appendChild(cell);
+            cells[r][c] = cell;
+        }
+    }
+
+    modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            setMode(btn.dataset.mode);
+        });
+    });
+
+    function setMode(mode) {
+        currentMode = mode;
+        modeBtns.forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === mode);
+        });
+    }
+
+    function handleCellClick(x, y) {
+        if (currentMode === 'indicator') {
+            const found = MAZE_DATA.find(m =>
+                m.indicators.some(([ix, iy]) => ix === x && iy === y)
+            );
+            if (found) {
+                activeMaze = found;
+                setMode('start');
+            }
+        } else if (currentMode === 'start') {
+            startPos = [x, y];
+            setMode('goal');
+        } else if (currentMode === 'goal') {
+            goalPos = [x, y];
+        }
+
+        renderMaze();
+    }
+
+    function renderMaze() {
+        for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 6; c++) {
+                const cell = cells[r][c];
+                cell.className = 'maze-cell';
+                cell.innerHTML = '';
+            }
+        }
+
+        if (activeMaze) {
+            for (let r = 0; r < 6; r++) {
+                for (let c = 0; c < 6; c++) {
+                    const mask = activeMaze.walls[r][c];
+                    const cell = cells[r][c];
+                    if (mask & 1) cell.classList.add('wall-top');
+                    if (mask & 2) cell.classList.add('wall-right');
+                    if (mask & 4) cell.classList.add('wall-bottom');
+                    if (mask & 8) cell.classList.add('wall-left');
+                }
+            }
+
+            activeMaze.indicators.forEach(([ix, iy]) => {
+                const c = ix - 1;
+                const r = 6 - iy;
+                const ind = document.createElement('div');
+                ind.className = 'maze-marker-indicator';
+                cells[r][c].appendChild(ind);
+            });
+        }
+
+        if (startPos) {
+            const [sx, sy] = startPos;
+            const c = sx - 1;
+            const r = 6 - sy;
+            const startEl = document.createElement('div');
+            startEl.className = 'maze-marker-start';
+            cells[r][c].appendChild(startEl);
+        }
+
+        if (goalPos) {
+            const [gx, gy] = goalPos;
+            const c = gx - 1;
+            const r = 6 - gy;
+            const goalEl = document.createElement('div');
+            goalEl.className = 'maze-marker-goal';
+            cells[r][c].appendChild(goalEl);
+        }
+
+        if (activeMaze && startPos && goalPos) {
+            solveMaze();
+        }
+    }
+
+    function solveMaze() {
+        const [sx, sy] = startPos;
+        const [gx, gy] = goalPos;
+
+        // Convert start/goal (x, y) to DOM row/col for pathfinding
+        const sr = 6 - sy;
+        const sc = sx - 1;
+        const gr = 6 - gy;
+        const gc = gx - 1;
+
+        if (sr === gr && sc === gc) {
+            resultDisplay.textContent = 'ALREADY AT GOAL';
+            resultDisplay.style.color = '#07ef22';
+            return;
+        }
+
+        const queue = [[sr, sc, [], [[sr, sc]]]];
+        const visited = new Set([`${sr},${sc}`]);
+
+        const directions = [
+            { dr: -1, dc: 0, wallBit: 1, name: 'UP' },
+            { dr: 0, dc: 1, wallBit: 2, name: 'RIGHT' },
+            { dr: 1, dc: 0, wallBit: 4, name: 'DOWN' },
+            { dr: 0, dc: -1, wallBit: 8, name: 'LEFT' }
+        ];
+
+        while (queue.length > 0) {
+            const [r, c, moves, coords] = queue.shift();
+
+            if (r === gr && c === gc) {
+                // Highlight path on grid
+                coords.forEach(([pr, pc]) => {
+                    cells[pr][pc].classList.add('path-step');
+                });
+
+                // Condense consecutive identical moves (e.g., UP, UP -> UP x2)
+                const condensedMoves = [];
+                for (let i = 0; i < moves.length; i++) {
+                    let count = 1;
+                    while (i + 1 < moves.length && moves[i] === moves[i + 1]) {
+                        count++;
+                        i++;
+                    }
+                    condensedMoves.push(count > 1 ? `${moves[i]} ${count}` : moves[i]);
+                }
+
+                // Display each condensed move on its own line
+                resultDisplay.innerHTML = condensedMoves.join('<br>');
+                resultDisplay.style.color = '#07ef22';
+                return;
+            }
+
+            const wallMask = activeMaze.walls[r][c];
+
+            for (const dir of directions) {
+                if ((wallMask & dir.wallBit) === 0) {
+                    const nr = r + dir.dr;
+                    const nc = c + dir.dc;
+                    const key = `${nr},${nc}`;
+
+                    if (nr >= 0 && nr < 6 && nc >= 0 && nc < 6 && !visited.has(key)) {
+                        visited.add(key);
+                        queue.push([nr, nc, [...moves, dir.name], [...coords, [nr, nc]]]);
+                    }
+                }
+            }
+        }
+
+        resultDisplay.textContent = 'NO PATH FOUND';
+        resultDisplay.style.color = 'red';
+    }
+
+    function resetMaze() {
+        activeMaze = null;
+        startPos = null;
+        goalPos = null;
+        setMode('indicator');
+        renderMaze();
+        resultDisplay.textContent = '';
+        resultDisplay.style.color = '#07ef22';
+    }
+
+    resetBtn.addEventListener('click', resetMaze);
 }
